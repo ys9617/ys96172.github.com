@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+    <head>
+        <title>D3 tutorial 20</title>
+        <script src="http://d3js.org/d3.v3.min.js"></script>
+    </head>
+
+<body>
+    <script>
+
+        var canvas = d3.select("body").append("svg")
+                        .attr("width", 1500)
+                        .attr("height", 1500)
+
+        d3.json("custom.geo.json" , function (data) {
+
+            var group = canvas.selectAll("g")
+                            .data(data.features)
+                            .enter()
+                            .append("g")
+
+            var projection = d3.geo.mercator();
+
+            var path = d3.geo.path().projection(projection);
+
+            var area = group.append("path")
+                            .attr("d", path)
+                            .attr("class", "area")
+                            .attr("fill", "steelblue");
+
+            group.append("text")
+                .attr("x", function (d) { return path.centroid(d)[0]; })
+                .attr("y", function (d) { return path.centroid(d)[1]; })
+                .attr("text-anchor", "middle")
+                .text(function (d) { return d.properties.LNNAMN; });
+
+        })
+
+    </script>
+</body>
+</html>
