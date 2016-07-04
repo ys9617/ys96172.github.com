@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+body {
+  font: 10px sans-serif;
+}
+
+svg text{
+  text-anchor:middle;
+  font-size:18px;
+}
+svg .values text{
+  pointer-events:none;
+  stroke-width: 0.5px;
+}
+</style>
+<body>
+<svg width="960" height="600"></svg>
+<script src="https://d3js.org/d3.v3.min.js"></script>
+<script src="http://vizjs.org/viz.v1.0.0.min.js"></script>
+<script>
+
+var data = [
+["US","Canada",343000]
+,["US","China",27000]
+,["US","India",3000]
+,["US","UK",212000]
+,["Canada","China",9000]
+,["Canada","India",2000]
+,["Canada","UK",86000]
+,["Canada","US",842000]
+,["UK","Canada",607000]
+,["UK","China",9000]
+,["UK","India",5000]
+,["UK","US",715000]
+,["China","Canada",711000]
+,["China","India",7000]
+,["China","UK",183000]
+,["China","US",2104000]
+,["India","Canada",621000]
+,["India","China",9000]
+,["India","UK",777000]
+,["India","US",1969000]
+];
+
+var colors = {
+   "US":"rgb(193,161,111)"
+  ,"Canada":"rgb(115,146,17)"
+  ,"UK":"rgb(234,193,36)"
+  ,"China":"rgb(217,36,5)"
+  ,"India":"rgb(53,99,235)"
+};
+
+var sortOrder =["UK","China","US","India","Canada"];
+function sort(a,b){ return d3.ascending(sortOrder.indexOf(a),sortOrder.indexOf(b)); }
+function valueFormat(x){ return (d3.format(",")(x/1000))+"k";}
+
+var chi = viz.ch().data(data).padding(.05)
+      .source(d=>d[1])
+      .target(d=>d[0])
+      .sort(sort)
+	  .valueFormat(valueFormat)
+      .fill(function(d){ return colors[d];});
+
+var che = viz.ch().data(data).padding(.05)
+      .sort(sort)
+	  .valueFormat(valueFormat)
+      .fill(function(d){ return colors[d];});
+      
+var svg = d3.select("svg");
+chi.defs(svg, 1); // create defs for curved labels
+che.defs(svg, 2); // create defs for curved labels
+
+svg.append("g").attr("transform", "translate(230,300)").call(che);
+svg.append("g").attr("transform", "translate(700,300)").call(chi);
+
+svg.append("text").attr("x",230).attr("y",50).text("Emigration").style("font-weight","bold")
+svg.append("text").attr("x",700).attr("y",50).text("Immigration").style("font-weight","bold")
+
+// adjust height of frame in bl.ocks.org
+d3.select(self.frameElement).style("height", "600px");
+      
+</script>
