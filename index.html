@@ -13,13 +13,22 @@
 
 </style>
 
-<body>
-  
-  <img src="D3.png" width="50" height="50">
 
-  <font color="#FE9A2E" size="6">
-  <b>Data-Driven Documants</b>
-  </font>
+
+
+<body>
+  <header>
+   <img src="D3.png" width="50" height="50">
+
+   <font color="#FE9A2E" size="6">
+    <b>Data-Driven Documents</b>
+   </font>
+  </header>
+
+  <section>
+  </section>
+
+
 
   <script>
 
@@ -29,12 +38,18 @@
     var color = d3.scale.ordinal()
                   .range(["steelblue", "steelblue", "steelblue"]);
 
-    var canvas = d3.select("body").append("svg")
-                    .attr("width", 1500)
-                    .attr("height", 1500);
+    var canvas = d3.select("section").append("svg")
+                    .attr("width", 500)
+                    .attr("height", 500);
 
     var group = canvas.append("g")
-                    .attr("transform", "translate(300, 300)");
+                    .attr("transform", "translate(250, 250)");
+
+
+    //d3.select("body").append("text").attr("text-anchor", "end").text("asdasdasdasd");
+    //arcs.append("text").attr("text-anchor", "middle") .text("asdasdasdasdasdadsasdasd");
+    //group.selectAll("text").append("g").append("text").text("asdasdasd");
+
 
     var arc = d3.svg.arc()
                 .innerRadius(r-80)
@@ -61,15 +76,31 @@
 
                                                    });
 
+ /*   var code = group.selectAll("text")
+                    .data(pie(data))
+                    .enter()
+                    .append("g")
+                      .append("text").attr("text-anchor", "end").text("asdasd");
+*/
+
     arcs.append("path")
             .attr("d", arc)
             .attr("fill", function (d) { return color(d.data); })
             .style('stroke-width', 5)
             .on("mouseover", function (d,i){ d3.select(this).attr("fill","orange");
-                                              arcs.append("text").attr("text-anchor", "middle").text("D3 tutorial example");
-                                                             })
+                                              if (d.data == 10){
+                                                arcs.append("text").attr("text-anchor", "middle") .text("D3 tutorial example");
+                                              }
+                                              else if (d.data == 10.1){
+                                                arcs.append("text").attr("text-anchor", "middle") .text("D3.js Cookbook");
+                                              }
+                                              else if (d.data == 10.2){
+                                                arcs.append("text").attr("text-anchor", "middle") .text("Circos practice");
+                                              }
+                                                                })
             .on("mouseout", function (d,i){ d3.select(this).attr("fill","steelblue");
-                                         //   arcs.append("text").text("B");
+                                            arcs.selectAll("text").text(null);
+                                            
                                                                  })
 
 /*        arcs.append("text")
@@ -82,5 +113,8 @@
   </script>
 
 </body>
+
+
+
 
 </html>
