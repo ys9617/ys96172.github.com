@@ -20,7 +20,7 @@
 
 <body>
   <header>
-   <img src="D3.png" width="50" height="50">
+   <img src="D3.png" width="23" height="23">
 
    <font color="#FE9A2E" size="6">
     <b>Data-Driven Documents</b>
@@ -71,11 +71,15 @@
 
                                                    });
 
+
+
+
     arcs.append("path")
             .attr("d", arc)
             .attr("fill", function (d) { return color(d.data); })
             .style('stroke-width', 5)
-            .on("mouseover", function (d,i){ d3.select(this).attr("fill","orange");
+            .on("mouseover", function (d,i){ 
+                                            d3.select(this).attr("fill","orange");
                                              d3.select(this).attr("style", "cursor:pointer").style('stroke-width', 5);
                                               if (d.data == 10){
                                                 arcs.append("text").attr("text-anchor", "middle").text("D3 tutorial example");
@@ -89,11 +93,33 @@
                                                 arcs.append("text").attr("text-anchor", "middle") .text("Chord / Circos example");
                                                 d3.select(this).transition().duration(500).attr("transform", "translate(8,-8)");
                                               }
-                                                                })
+                                                                } 
+                                                    
+                                                                )
             .on("mouseout", function (d,i){ d3.select(this).attr("fill","steelblue").style('stroke-width', 5);
                                             arcs.selectAll("text").text(null);
                                              d3.select(this).transition().attr("transform", "translate(0,0)");                                 
                                                                  })
+
+    function change_arc(d,i){
+      d3.select(this).attr("fill","orange");
+      d3.select(this).attr("style", "cursor:pointer").style('stroke-width', 5);
+      
+      if (d.data == 10){
+        arcs.append("text").attr("text-anchor", "middle").text("D3 tutorial example");
+        d3.select(this).transition().duration(500).attr("transform", "translate(-8,-8)");
+      }
+      else if (d.data == 10.01){
+        arcs.append("text").attr("text-anchor", "middle") .text("D3.js Cookbook");
+        d3.select(this).transition().duration(500).attr("transform", "translate(0,8)");
+      }
+      else if (d.data == 10.02){
+        arcs.append("text").attr("text-anchor", "middle") .text("Chord / Circos example");
+        d3.select(this).transition().duration(500).attr("transform", "translate(8,-8)");
+      }
+    }
+
+
 
   </script>
 
