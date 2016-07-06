@@ -56,8 +56,8 @@ function sort(a,b){ return d3.ascending(sortOrder.indexOf(a),sortOrder.indexOf(b
 function valueFormat(x){ return (d3.format(",")(x/1000))+"k";}
 
 var chi = viz.ch().data(data).padding(.05)
-      .source(d=>d[1])
-      .target(d=>d[0])
+      .source(d>=d[1])
+      .target(d>=d[0])
       .sort(sort)
 	  .valueFormat(valueFormat)
       .fill(function(d){ return colors[d];});
