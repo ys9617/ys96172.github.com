@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Transition Events</title>
+        <link rel="stylesheet" href="../css/styles.css"/>
+        <script src="../lib/d3.js"></script>
+    </head>
+    <body>
+        <script>
+            var body = d3.select("body"), duration = 300;
+
+            var div = body.append("div")
+                            .classed("box", true)
+                            .style("background-color", "steelblue")
+                            .style("color", "white")
+                            .text("waiting")
+                            .transition().duration(duration)
+                                .delay(1000)
+                                .each("start", function(){
+                                    console.log(arguments);
+                                    d3.select(this).text(function(d,i){
+                                        return "transitioning";
+                                    });
+                                })
+                                .each("end", function(){
+                                    d3.select(this).text(function(d,i){
+                                        return 'done';
+                                    });
+                                })
+                                .style("margin-left", "600px");
+
+        </script>
+    </body>
+</html>
