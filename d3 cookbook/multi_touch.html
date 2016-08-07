@@ -50,15 +50,15 @@
                             .innerRadius(initR - thickness);
 
                 var g = svg.selectAll("g.touch")
-                            .data(d3.touches(svg.node(), function(d){
+                            .data(d3.touches(svg.node()), function(d){
                                 return d.identifier;
-                            }));
+                            });
 
                 g.enter()
                     .append("g")
                     .attr("class", "touch")
                     .attr("transform", function(d){
-                        return "translate(" + d[0] + "," + d[i] + ")";
+                        return "translate(" + d[0] + "," + d[1] + ")";
                     })
                     .append("path")
                         .attr("class", "arc")
@@ -93,6 +93,7 @@
                                     .attr("cx", position[0])
                                     .attr("cy", position[1])
                                     .attr("r", initR - (thickness/2))
+                                    .style("stroke-width", thickness/i)
                                 .transition()
                                     .delay(Math.pow(i, 2.5) * 50)
                                     .duration(2000).ease("quad-in")
