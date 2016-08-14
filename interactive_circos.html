@@ -193,12 +193,12 @@
                         return area(area_data);
                     })
                     .attr("stroke", function(d){
-                        return color(d.s_chr);
+                        return color(d.s_chr-1);
                     })
            //         .attr("stroke-opacity", 0.7)
                     .attr("stroke-width", 0.05)
                     .attr("fill", function(d){
-                        return color(d.s_chr);
+                        return color(d.s_chr-1);
                     });
 
 
