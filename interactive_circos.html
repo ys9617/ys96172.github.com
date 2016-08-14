@@ -5,11 +5,17 @@
         <title>Circos</title>
         <script src="d3.js"></script>
         <script src="d_h_data.js"></script>
+        <script src="data_.js"></script>
         <script src="//d3js.org/d3.v3.min.js"></script>
 
-        <script src="https://d3js.org/d3-array.v1.min.js"></script>
-        <script src="https://d3js.org/d3-path.v1.min.js"></script>
-        <script src="https://d3js.org/d3-chord.v1.min.js"></script>
+       <script src="https://d3js.org/d3-path.v1.min.js"></script>
+       <style>
+           .line{
+                fill: none;    
+                stroke: steelblue;
+                stroke-width: 2;
+            }
+        </style>
     </head>
     <body>
         <script>
@@ -22,6 +28,8 @@
 
             var sum = 0;
             var temp = [];
+
+            var color = d3.scale.category20();
 
             for ( var i = 0; i < data.length; i++ ){
                 sum += data[i];
@@ -37,13 +45,13 @@
             var arc = d3.svg.arc()
                         .innerRadius(ir)
                         .outerRadius(or)
-                        .cornerRadius(5);
+                        .cornerRadius(2);
+             //           .padAngle(.01);
                         
 
             var pie = d3.layout.pie()
                         .sort(null)
-                        .value(function(d){ return d; })
-                    //    .padAngle(.005);
+                        .value(function(d){ return d; });
 
             var arcs = group.selectAll(".arc")
                             .data(pie(data))
@@ -51,16 +59,157 @@
                                 .append("g")
                                 .attr("class", "arc");
 
-           
-            var ribbon = d3.ribbon()
-                     .radius(240);
 
-            ribbon({
-                source: {startAngle: 0, endAngle: 10},
-                target: {startAngle: 90, endAngle: 130}
-            });
+//---line
 
-            
+
+
+            var source = 30 * Math.PI/180;
+            var target = 275 * Math.PI/180;
+
+            var source2 = 35 * Math.PI/180;
+            var target2 = 270 * Math.PI/180;
+/*
+            var line_data = [   { x: 500 + ir * Math.sin(source), y: 500 - ir * Math.cos(source) }, 
+                                { x: 500, y: 500 }, 
+                                { x: 500 + ir * Math.sin(target), y: 500 - ir * Math.cos(target) }  ];
+
+            var line_data2 = [   { x: 500 + ir * Math.sin(source2), y: 500 - ir * Math.cos(source2) }, 
+                                { x: 500, y: 500 }, 
+                                { x: 500 + ir * Math.sin(target2), y: 500 - ir * Math.cos(target2) }  ];
+
+            var line = d3.svg.line()
+                        .x(function(d){ return d.x; })
+                        .y(function(d){ return d.y; })
+                        .interpolate("basis");
+
+            d3.select("svg")
+                .append("g")
+                .append("path")
+                .attr("d", line(line_data))
+                .attr("stroke", "orange")
+                .attr("stroke-width", 1)
+                .attr("fill", "none");
+
+            d3.select("svg")
+                .append("g")
+                .append("path")
+                .attr("d", line(line_data2))
+                .attr("stroke", "orange")
+                .attr("stroke-width", 1)
+                .attr("fill", "none");
+*/
+//---
+/*
+            var area_data = [
+                { x0: 500 + ir * Math.sin(source), y0: 500 - ir * Math.cos(source), 
+                  x1: 500 + ir * Math.sin(source2), y1: 500 - ir * Math.cos(source2) },
+                { x0: 500, y0: 500, x1: 500, y1: 500 },
+                { x0: 500 + ir * Math.sin(target), y0: 500 - ir * Math.cos(target),
+                  x1: 500 + ir * Math.sin(target2), y1: 500 - ir * Math.cos(target2)
+                }
+            ];
+
+            var area = d3.svg.area()
+                        .x0(function(d){ return d.x0; })
+                        .x1(function(d){ return d.x1; })
+                        .y0(function(d){ return d.y0; })
+                        .y1(function(d){ return d.y1; })
+                        .interpolate("basis");
+
+
+            d3.select("svg")
+                .append("g")
+                .append("path")
+                    .attr("class", "ribbon")
+                    .attr("d", area(area_data))
+                    .attr("stroke", "black")
+                    .attr("stroke-width", 2)
+                    .attr("fill", "steelblue");
+
+*/
+//----
+
+            var area = d3.svg.area()
+                        .x0(function(d){ return d.x0; })
+                        .x1(function(d){ return d.x1; })
+                        .y0(function(d){ return d.y0; })
+                        .y1(function(d){ return d.y1; })
+                        .interpolate("basis");
+
+
+            d3.select("svg")
+                .append("g")
+                .selectAll("path.ribbon")
+                .data(data_dh)
+                .enter()
+                .append("path")
+                    .attr("class", "ribbon")
+                    .attr("d", function(d){
+                        var source, source2, target, target2;
+
+                        if ( d.s_chr == 1 ){
+                            if ( d.s_op == "+" ){
+                                source = (d.s_start/sum) * 2 * Math.PI;
+                                source2 = ((d.s_start + d.s_opr)/sum) * 2 * Math.PI;
+                            }
+                            else {
+                                source = ((d.s_start - d.sopr)/sum) * 2 * Math.PI;
+                                source = (d.s_start/sum) * 2 * Math.PI;
+                            }
+                        }
+                        else {
+                            if ( d.s_op == "+" ){
+                                source = ((d.s_start + temp[d.s_chr-2])/sum) * 2 * Math.PI;
+                                source2 = ((d.s_start + d.s_opr + temp[d.s_chr-2])/sum) * 2 * Math.PI;
+                            }
+                            else {
+                                source = ((d.s_start - d.s_opr + temp[d.s_chr-2])/sum) * 2 * Math.PI;
+                                source2 = ((d.s_start + temp[d.s_chr-2])/sum) * 2 * Math.PI;
+                            }
+                        }
+
+                        if ( d.t_op == "+" ){
+                            target = ((temp[d.t_chr+23] + d.t_start)/sum) * 2 * Math.PI;
+                            target2 = ((temp[d.t_chr+23] + d.t_start + d.t_opr)/sum) * 2 * Math.PI;
+                        }
+                        else {
+                            target = ((temp[d.t_chr+23] + d.t_start - d.t_opr)/sum) * 2 * Math.PI;
+                            target2 = ((temp[d.t_chr+23] + d.t_start)/sum) * 2 * Math.PI;
+                        }
+
+
+
+                        var area_data = [
+                           { x0: 500 + ir * Math.sin(source), y0: 500 - ir * Math.cos(source), 
+                             x1: 500 + ir * Math.sin(source2), y1: 500 - ir * Math.cos(source2) },
+                           { x0: 500, y0: 500, x1: 500, y1: 500 },
+                           { x0: 500 + ir * Math.sin(target), y0: 500 - ir * Math.cos(target),
+                             x1: 500 + ir * Math.sin(target2), y1: 500 - ir * Math.cos(target2)
+                           }
+                        ];
+
+
+                        return area(area_data);
+                    })
+                    .attr("stroke", function(d){
+                        return color(d.s_chr);
+                    })
+           //         .attr("stroke-opacity", 0.7)
+                    .attr("stroke-width", 0.05)
+                    .attr("fill", function(d){
+                        return color(d.s_chr);
+                    });
+
+
+
+
+
+//----
+
+
+
+
 
             arcs.append("path")
                 .attr("d", arc)
@@ -77,19 +226,22 @@
                     if ( i >= 25 )
                         index -= 25;
 
-                    arcs.append("text").attr("text-anchor", "middle").text("chr" + (index + 1) )
+                    d3.select(".arc")
+                        .append("text")
+                        .attr("text-anchor", "middle")
+                        .text("chr" + (index + 1) )
                         .attr("transform", "rotate(" + angle + ")" + "translate(" + move  + ",0)")
                         .style("stroke", function (){
                             if( i >= 25 )
                                 return "steelblue";
                             else
-                                return "orange";
+                                return color(i);
                         });
 
                     if( i >= 25 )
                         return "steelblue";
                     else
-                        return "orange";
+                        return color(i);
                 })
                 .style("stroke", "black")
                 .style("stroke-width", 1)
@@ -102,12 +254,16 @@
                         if( i >= 25 )
                             return "steelblue";
                         else
-                            return "orange";
+                            return color(i);
                     });
+                });
 
-                })
-                
-                
+//---
+
+            
+
+
+                  
 
         </script>
     </body>
