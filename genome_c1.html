@@ -63,13 +63,13 @@
 //---line
 
 
-
+/*
             var source = 30 * Math.PI/180;
             var target = 275 * Math.PI/180;
 
             var source2 = 35 * Math.PI/180;
             var target2 = 270 * Math.PI/180;
-/*
+
             var line_data = [   { x: 500 + ir * Math.sin(source), y: 500 - ir * Math.cos(source) }, 
                                 { x: 500, y: 500 }, 
                                 { x: 500 + ir * Math.sin(target), y: 500 - ir * Math.cos(target) }  ];
@@ -99,37 +99,7 @@
                 .attr("stroke-width", 1)
                 .attr("fill", "none");
 */
-//---
-/*
-            var area_data = [
-                { x0: 500 + ir * Math.sin(source), y0: 500 - ir * Math.cos(source), 
-                  x1: 500 + ir * Math.sin(source2), y1: 500 - ir * Math.cos(source2) },
-                { x0: 500, y0: 500, x1: 500, y1: 500 },
-                { x0: 500 + ir * Math.sin(target), y0: 500 - ir * Math.cos(target),
-                  x1: 500 + ir * Math.sin(target2), y1: 500 - ir * Math.cos(target2)
-                }
-            ];
-
-            var area = d3.svg.area()
-                        .x0(function(d){ return d.x0; })
-                        .x1(function(d){ return d.x1; })
-                        .y0(function(d){ return d.y0; })
-                        .y1(function(d){ return d.y1; })
-                        .interpolate("basis");
-
-
-            d3.select("svg")
-                .append("g")
-                .append("path")
-                    .attr("class", "ribbon")
-                    .attr("d", area(area_data))
-                    .attr("stroke", "black")
-                    .attr("stroke-width", 2)
-                    .attr("fill", "steelblue");
-
-*/
-//----
-
+//  ribbon
             var area = d3.svg.area()
                         .x0(function(d){ return d.x0; })
                         .x1(function(d){ return d.x1; })
@@ -145,9 +115,13 @@
                 .enter()
                 .append("path")
                     .attr("class", "ribbon")
+                    .attr("id", function(d,i){
+                        var tag = "z" + d.s_chr;
+                        return tag;
+                    })
                     .attr("d", function(d){
                         var source, source2, target, target2;
-
+                    
                         if ( d.s_chr == 1 ){
                             if ( d.s_op == "+" ){
                                 source = (d.s_start/sum) * 2 * Math.PI;
@@ -169,6 +143,7 @@
                             }
                         }
 
+                        
                         if ( d.t_op == "+" ){
                             target = ((temp[d.t_chr+23] + d.t_start)/sum) * 2 * Math.PI;
                             target2 = ((temp[d.t_chr+23] + d.t_start + d.t_opr)/sum) * 2 * Math.PI;
@@ -177,8 +152,8 @@
                             target = ((temp[d.t_chr+23] + d.t_start - d.t_opr)/sum) * 2 * Math.PI;
                             target2 = ((temp[d.t_chr+23] + d.t_start)/sum) * 2 * Math.PI;
                         }
-
-
+                        
+                        
 
                         var area_data = [
                            { x0: 500 + (ir-5) * Math.sin(source), y0: 500 - (ir-5) * Math.cos(source), 
@@ -188,19 +163,21 @@
                              x1: 500 + (ir-5) * Math.sin(target2), y1: 500 - (ir-5) * Math.cos(target2)
                            }
                         ];
-
+                    
 
                         return area(area_data);
+                    
                     })
                     .attr("stroke", function(d){
                         return color(d.s_chr-1);
                     })
-           //         .attr("stroke-opacity", 0.7)
+                    .attr("stroke-opacity", 0)
                     .attr("stroke-width", 0.05)
                     .attr("fill", function(d){
                         return color(d.s_chr-1);
                     });
-
+                    
+       
 
 
 
@@ -209,7 +186,7 @@
 
 
 
-
+//  arc, text and interaction
 
             arcs.append("path")
                 .attr("d", arc)
@@ -246,10 +223,28 @@
                 .style("stroke", "black")
                 .style("stroke-width", 1)
                 .on("mouseover", function(d,i){
+
+                    var tag = "z" + (i+1);
+
+                    d3.selectAll("path#" + tag)
+                        .attr("stroke-opacity", null)
+                        .attr("stroke", color(i))
+                        .attr("fill", color(i));
+
+
                     d3.select(this).attr("fill", "red");
 
                 })
                 .on("mouseout", function(d,i){
+
+                    var tag = "z" + (i+1);
+
+                    d3.selectAll("path#" + tag)
+                        .attr("stroke-opacity", 0)
+                        .attr("stroke", color(i))
+                        .attr("fill", color(i));
+
+
                     d3.select(this).attr("fill", function(){
                         if( i >= 25 )
                             return "steelblue";
