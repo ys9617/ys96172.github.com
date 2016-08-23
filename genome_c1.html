@@ -16,6 +16,9 @@
                 stroke-width: 2;
             }
         </style>
+
+
+
     </head>
     <body>
         <script>
@@ -31,6 +34,11 @@
 
             var color = d3.scale.category20();
 
+            var total_view = true, partial_view = false;
+            var score_f = 0;
+
+            var target_chr = [];
+
             for ( var i = 0; i < data.length; i++ ){
                 sum += data[i];
                 temp.push(sum);
@@ -45,8 +53,9 @@
             var arc = d3.svg.arc()
                         .innerRadius(ir)
                         .outerRadius(or)
-                        .cornerRadius(2);
-             //           .padAngle(.01);
+                        .cornerRadius(2)
+                        .padRadius(300)
+                        .padAngle(0.01);
                         
 
             var pie = d3.layout.pie()
@@ -60,45 +69,6 @@
                                 .attr("class", "arc");
 
 
-//---line
-
-
-/*
-            var source = 30 * Math.PI/180;
-            var target = 275 * Math.PI/180;
-
-            var source2 = 35 * Math.PI/180;
-            var target2 = 270 * Math.PI/180;
-
-            var line_data = [   { x: 500 + ir * Math.sin(source), y: 500 - ir * Math.cos(source) }, 
-                                { x: 500, y: 500 }, 
-                                { x: 500 + ir * Math.sin(target), y: 500 - ir * Math.cos(target) }  ];
-
-            var line_data2 = [   { x: 500 + ir * Math.sin(source2), y: 500 - ir * Math.cos(source2) }, 
-                                { x: 500, y: 500 }, 
-                                { x: 500 + ir * Math.sin(target2), y: 500 - ir * Math.cos(target2) }  ];
-
-            var line = d3.svg.line()
-                        .x(function(d){ return d.x; })
-                        .y(function(d){ return d.y; })
-                        .interpolate("basis");
-
-            d3.select("svg")
-                .append("g")
-                .append("path")
-                .attr("d", line(line_data))
-                .attr("stroke", "orange")
-                .attr("stroke-width", 1)
-                .attr("fill", "none");
-
-            d3.select("svg")
-                .append("g")
-                .append("path")
-                .attr("d", line(line_data2))
-                .attr("stroke", "orange")
-                .attr("stroke-width", 1)
-                .attr("fill", "none");
-*/
 //  ribbon
             var area = d3.svg.area()
                         .x0(function(d){ return d.x0; })
@@ -108,82 +78,119 @@
                         .interpolate("basis");
 
 
-            d3.select("svg")
-                .append("g")
-                .selectAll("path.ribbon")
-                .data(data_dh)
-                .enter()
-                .append("path")
-                    .attr("class", "ribbon")
-                    .attr("id", function(d,i){
-                        var tag = "z" + d.s_chr;
-                        return tag;
-                    })
-                    .attr("d", function(d){
-                        var source, source2, target, target2;
-                    
-                        if ( d.s_chr == 1 ){
-                            if ( d.s_op == "+" ){
-                                source = (d.s_start/sum) * 2 * Math.PI;
-                                source2 = ((d.s_start + d.s_opr)/sum) * 2 * Math.PI;
+            function ribbon(sf){
+                d3.select("svg")
+                    .append("g")
+                    .selectAll("path.ribbon")
+                    .data(data_dh)
+                    .enter()
+                    .append("path")
+                        .attr("class", "ribbon")
+                        .attr("id", function(d,i){
+                            var tag = "z" + d.s_chr;
+
+                            return tag;
+                        })
+                        .attr("d", function(d){
+
+                            if ( d.score < sf )
+                              return null;
+
+                            var source, source2, target, target2;
+
+                            var scale_s = d3.scale.linear();
+                            var scale_t = d3.scale.linear();
+
+
+                            if ( d.s_chr == 1 ){
+                                if ( d.s_op == "+" ){
+                                    source = (d.s_start/sum) * 2 * Math.PI;
+                                    source2 = ((d.s_start + d.s_opr)/sum) * 2 * Math.PI;
+                                }
+                                else {
+                                    source = ((d.s_start - d.sopr)/sum) * 2 * Math.PI;
+                                    source = (d.s_start/sum) * 2 * Math.PI;
+                                }
+
+                                scale_s.domain([0, (d.s_total/sum)*2*Math.PI])
+                                    .range([3/ir, (d.s_total/sum)*2*Math.PI-3/ir])
                             }
                             else {
-                                source = ((d.s_start - d.sopr)/sum) * 2 * Math.PI;
-                                source = (d.s_start/sum) * 2 * Math.PI;
+                                if ( d.s_op == "+" ){
+                                    source = ((d.s_start + temp[d.s_chr-2])/sum) * 2 * Math.PI;
+                                    source2 = ((d.s_start + d.s_opr + temp[d.s_chr-2])/sum) * 2 * Math.PI;
+                                }
+                                else {
+                                    source = ((d.s_start - d.s_opr + temp[d.s_chr-2])/sum) * 2 * Math.PI;
+                                    source2 = ((d.s_start + temp[d.s_chr-2])/sum) * 2 * Math.PI;
+                                }
+
+                                scale_s.domain([(temp[d.s_chr-2]/sum)*2*Math.PI, ((temp[d.s_chr-2]+d.s_total)/sum)*2*Math.PI])
+                                    .range([(temp[d.s_chr-2]/sum)*2*Math.PI + 3/ir, ((temp[d.s_chr-2]+d.s_total)/sum)*2*Math.PI - 3/ir])
                             }
-                        }
-                        else {
-                            if ( d.s_op == "+" ){
-                                source = ((d.s_start + temp[d.s_chr-2])/sum) * 2 * Math.PI;
-                                source2 = ((d.s_start + d.s_opr + temp[d.s_chr-2])/sum) * 2 * Math.PI;
+
+                            
+                            if ( d.t_op == "+" ){
+                                target = ((temp[d.t_chr+23] + d.t_start)/sum) * 2 * Math.PI;
+                                target2 = ((temp[d.t_chr+23] + d.t_start + d.t_opr)/sum) * 2 * Math.PI;
                             }
                             else {
-                                source = ((d.s_start - d.s_opr + temp[d.s_chr-2])/sum) * 2 * Math.PI;
-                                source2 = ((d.s_start + temp[d.s_chr-2])/sum) * 2 * Math.PI;
+                                target = ((temp[d.t_chr+23] + d.t_start - d.t_opr)/sum) * 2 * Math.PI;
+                                target2 = ((temp[d.t_chr+23] + d.t_start)/sum) * 2 * Math.PI;
                             }
-                        }
+                            
+                            scale_t.domain([(temp[d.t_chr+23]/sum) * 2 * Math.PI, ((temp[d.t_chr+23] + d.t_total)/sum) * 2 * Math.PI])
+                                    .range([(temp[d.t_chr+23]/sum) * 2 * Math.PI + 3/ir, ((temp[d.t_chr+23] + d.t_total)/sum) * 2 * Math.PI - 3/ir])
+                            
 
+                            var area_data = [
+                            { x0: 500 + (ir-5) * Math.sin(scale_s(source)), y0: 500 - (ir-5) * Math.cos(scale_s(source)), 
+                                x1: 500 + (ir-5) * Math.sin(scale_s(source2)), y1: 500 - (ir-5) * Math.cos(scale_s(source2)) },
+                            { x0: 500, y0: 500, x1: 500, y1: 500 },
+                            { x0: 500 + (ir-5) * Math.sin(scale_t(target)), y0: 500 - (ir-5) * Math.cos(scale_t(target)),
+                                x1: 500 + (ir-5) * Math.sin(scale_t(target2)), y1: 500 - (ir-5) * Math.cos(scale_t(target2))
+                            }
+                            ];
                         
-                        if ( d.t_op == "+" ){
-                            target = ((temp[d.t_chr+23] + d.t_start)/sum) * 2 * Math.PI;
-                            target2 = ((temp[d.t_chr+23] + d.t_start + d.t_opr)/sum) * 2 * Math.PI;
-                        }
-                        else {
-                            target = ((temp[d.t_chr+23] + d.t_start - d.t_opr)/sum) * 2 * Math.PI;
-                            target2 = ((temp[d.t_chr+23] + d.t_start)/sum) * 2 * Math.PI;
-                        }
+
+                            return area(area_data);
+                        })
+                        .attr("stroke", function(d){
+                            return color(d.s_chr-1);
+                        })
+            //         .attr("stroke-opacity", 0)
+                        .attr("stroke-width", 0.05)
+                        .attr("fill", function(d){
+                            return color(d.s_chr-1);
+                        })
+                        .append("target")
+                            .attr("id", function(d,i){
+
+                                return "h" + d.t_chr;
+                            })
                         
-                        
-
-                        var area_data = [
-                           { x0: 500 + (ir-5) * Math.sin(source), y0: 500 - (ir-5) * Math.cos(source), 
-                             x1: 500 + (ir-5) * Math.sin(source2), y1: 500 - (ir-5) * Math.cos(source2) },
-                           { x0: 500, y0: 500, x1: 500, y1: 500 },
-                           { x0: 500 + (ir-5) * Math.sin(target), y0: 500 - (ir-5) * Math.cos(target),
-                             x1: 500 + (ir-5) * Math.sin(target2), y1: 500 - (ir-5) * Math.cos(target2)
-                           }
-                        ];
-                    
-
-                        return area(area_data);
-                    
-                    })
-                    .attr("stroke", function(d){
-                        return color(d.s_chr-1);
-                    })
-                    .attr("stroke-opacity", 0)
-                    .attr("stroke-width", 0.05)
-                    .attr("fill", function(d){
-                        return color(d.s_chr-1);
-                    });
-                    
-       
-
-
-
+            }       
+            
+            ribbon(score_f);
 
 //----
 
+
+            d3.select(".arc")
+                .append("text")
+                .attr("text-anchor", "middle")
+                .text("human")
+                .attr("transform", "translate(-400,400)")
+                .style("stroke", "black")
+                .style("font-size", 30)
+
+            d3.select(".arc")
+                .append("text")
+                .attr("text-anchor", "middle")
+                .text("zebrafish")
+                .attr("transform", "translate(430,-350)")
+                .style("stroke", "gray")
+                .style("font-size", 30)
 
 
 //  arc, text and interaction
@@ -227,23 +234,44 @@
                     var tag = "z" + (i+1);
 
                     d3.selectAll("path#" + tag)
+                        .attr("stroke", "white")
+                        .attr("fill", "white")
+                        .transition()
+                     //   .duration(1000)
                         .attr("stroke-opacity", null)
                         .attr("stroke", color(i))
-                        .attr("fill", color(i));
+                        .attr("fill", color(i))
+                        
+                            
+
+                    d3.select(this)
+                        .attr("fill", "red");
+
+                    
 
 
-                    d3.select(this).attr("fill", "red");
+          /*          d3.selectAll(".arc")
+                        .selectAll("path")
+                        .data(data_dh)
+                        .attr("fill", function(a,b){
 
+                            console.log(a);
+
+                            return "red";
+                        })
+            */
+                    
                 })
                 .on("mouseout", function(d,i){
 
                     var tag = "z" + (i+1);
 
-                    d3.selectAll("path#" + tag)
-                        .attr("stroke-opacity", 0)
-                        .attr("stroke", color(i))
-                        .attr("fill", color(i));
-
+                    if ( partial_view == true){
+                        d3.selectAll("path#" + tag)
+                            .attr("stroke-opacity", 0)
+                            .attr("stroke", color(i))
+                            .attr("fill", color(i));
+                    }
 
                     d3.select(this).attr("fill", function(){
                         if( i >= 25 )
@@ -261,5 +289,48 @@
                   
 
         </script>
+
+        <input type="range" min="0.0" max="20000.00000" value="0" onchange="score_filter(this.value)" />
+        <span id="range">0</span>
+
+        <script>
+            function score_filter(score)
+            {
+                document.getElementById("range").innerHTML=score;
+
+                d3.selectAll("path.ribbon")
+                    .remove("path.ribbon")
+                
+                score_f = score;
+
+                ribbon(score_f);
+
+            }
+        </script>
+
+
+        <div class="control-group">
+            <button onclick="total()">Total View</button>
+            <button onclick="partial()">Partial View</button>
+        </div>
+        <script>
+            function total(){
+                total_view = true;
+                partial_view = false;
+                
+                ribbon(score_f);
+            }
+
+            function partial(){
+                partial_view = true;
+                total_view = false;
+
+                d3.selectAll("path.ribbon")
+                    .attr("stroke-opacity", 0)
+            }
+
+        </script>
+
+
     </body>
 </html>
