@@ -305,6 +305,16 @@
 
                 ribbon(score_f);
 
+                if (partial_view == true){
+                    d3.selectAll("path.ribbon")
+                    .attr("stroke-opacity", 0)
+                }
+                else {
+                    total_view = true;
+                    partial_view = false;
+                }
+                    
+
             }
         </script>
 
@@ -324,6 +334,11 @@
             function partial(){
                 partial_view = true;
                 total_view = false;
+
+                d3.selectAll("path.ribbon")
+                    .remove("path.ribbon")
+
+                ribbon(score_f);
 
                 d3.selectAll("path.ribbon")
                     .attr("stroke-opacity", 0)
