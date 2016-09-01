@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Flow Practice</title>
+
+        <script id="vertex-shader" type="x-shader/x-vertex">
+            attribute vec2 vPosition;
+            attribute vec2 vTexCoord;
+
+            varying vec2 fTexCoord;            
+
+            void main(){
+                fTexCoord = vTexCoord;
+                gl_Position = vec4(vPosition, 0.0, 1.0);
+            }
+        </script>
+        <script id="fragment-shader" type="x-shader/x-fragment">
+            precision mediump float;
+
+            varying vec2 fTexCoord;
+
+            uniform sampler2D texture;
+
+            void main(){
+                gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0) * texture2D(texture, fTexCoord);
+            }
+        </script>
+
+        
+        <script id="vertex-shaderf" type="x-shader/x-vertex">
+            attribute vec2 vPosition2;            
+            uniform float update;
+
+            void main(){
+                vec2 temp = vPosition2 + vec2(update, 0);
+
+                gl_PointSize = 10.0;
+                //gl_Position = vec4(vPosition2, -0.2, 1.0);
+                gl_Position = vec4(temp, -0.2, 1.0);
+            }
+        </script>
+        <script id="fragment-shaderf" type="x-shader/x-fragment">
+            precision mediump float;
+
+            void main(){
+                gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+            }
+        </script>
+
+        <script src="webgl-utils.js"></script>
+        <script src="initShaders.js"></script>
+        <script src="MV.js"></script>
+        <script src="moving_us.js"></script>
+    </head>
+    <body>
+        <canvas id="gl-canvas" width="1024", height="1024">
+            flow practice?
+        </canvas>
+        <img id="south_korea" src="ulsan.png" hidden></img>
+    </body>
+</html>
