@@ -1,0 +1,157 @@
+<!doctype html>
+<html>
+    <heaD>
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+        <title>map practice 3</title>
+
+        <link rel="stylesheet" href="https://js.arcgis.com/4.0/esri/css/main.css">
+        <script src="https://js.arcgis.com/4.0/"></script>
+        <script src="MV.js"></script>
+
+        <style>
+            html, body, #viewDiv {
+                padding: 0;
+                margin: 0;
+                height: 100%;
+                width: 100%;
+            }
+        </style>
+        <script>
+
+            // unist 129.191097, 35.573321
+            // us ktx 129.138145, 35.550713
+            // chunsang 129.226351, 35.562606
+            // guyoung 129.241842, 35.573610
+            // samsan 129.339327, 35.539739
+
+            function bezier(start, end, con, n, array){
+                var x = (start[0]+end[0])/2;
+                var y = (start[1]+end[1])/2;
+
+                array.push(start);   
+
+                if (n > 1){
+                    n--;
+                    bezier(start, vec2((con[0]+x)/2,(con[1]+y)/2), vec2((start[0]+con[0])/2, (start[1]+con[1])/2), n, array);
+                    bezier(vec2((con[0]+x)/2,(con[1]+y)/2), end, vec2((end[0]+con[0])/2, (end[1]+con[1])/2), n, array);
+                }
+                else{
+                    array.push(vec2((con[0]+x)/2,(con[1]+y)/2));
+                }
+
+                array.push(end);
+            }
+
+            var curve1 = [];
+            var curve2 = [];
+            var curve3 = [];
+            var curve4 = [];
+            
+
+
+            bezier(vec2(129.191097, 35.573321), vec2(129.138145, 35.550713), 
+                  vec2(129.149952, 35.577275), 15, curve1);
+
+            bezier(vec2(129.191097, 35.573321), vec2(129.226351, 35.562606), 
+                  vec2(129.217014, 35.583772), 15, curve2);
+
+            bezier(vec2(129.191097, 35.573321), vec2(129.241842, 35.573610), 
+                  vec2(129.217014, 35.589072), 15, curve3);
+
+            bezier(vec2(129.191097, 35.573321), vec2(129.339327, 35.539739), 
+                  vec2(129.279970, 35.609670), 15, curve4);
+            
+
+            require([
+            "esri/Map",
+            "esri/views/MapView",
+            "esri/geometry/Polyline",
+            "esri/symbols/SimpleLineSymbol",
+            "esri/Graphic",
+            "dojo/domReady!"
+            ], function(
+            Map,
+            MapView,
+            Polyline,
+            SimpleLineSymbol,
+            Graphic
+            ) {
+
+                // Create the Map
+                var map = new Map({
+                    basemap: "streets"
+                });
+
+                // Create the MapView
+                var view = new MapView({
+                    container: "viewDiv",
+                    map: map,
+                    center: [129.191097, 35.573321],
+                    zoom: 13
+                });
+
+                var polyline = new Polyline({
+                    paths: curve1
+                });
+                var polyline2 = new Polyline({
+                    paths: curve2
+                });
+                var polyline3 = new Polyline({
+                    paths: curve3
+                });
+                var polyline4 = new Polyline({
+                    paths: curve4
+                });
+
+
+                var lineSymbol = new SimpleLineSymbol({
+                    color: [100, 119, 40],
+                    width: 2
+                });
+                var lineSymbol2 = new SimpleLineSymbol({
+                    color: [0, 119, 40],
+                    width: 2
+                });
+                var lineSymbol3 = new SimpleLineSymbol({
+                    color: [0, 119, 0],
+                    width: 2
+                });
+                var lineSymbol4 = new SimpleLineSymbol({
+                    color: [0, 0, 40],
+                    width: 2
+                });
+
+
+                var polylineGraphic = new Graphic({
+                    geometry: polyline, 
+                    symbol: lineSymbol,
+                });
+                var polylineGraphic2 = new Graphic({
+                    geometry: polyline2,
+                    symbol: lineSymbol2,
+                });
+                var polylineGraphic3 = new Graphic({
+                    geometry: polyline3,
+                    symbol: lineSymbol3,
+                });
+                var polylineGraphic4 = new Graphic({
+                    geometry: polyline4,
+                    symbol: lineSymbol4,
+                });
+
+
+                view.graphics.add(polylineGraphic);
+                view.graphics.add(polylineGraphic2);
+                view.graphics.add(polylineGraphic3);
+                view.graphics.add(polylineGraphic4);
+            });
+
+
+
+        </script>
+    </heaD>
+    <body>
+        <div id="viewDiv"></div>
+    </body>
+</html>
