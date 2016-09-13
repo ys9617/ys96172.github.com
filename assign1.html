@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+body {
+  font: 10px sans-serif;
+}
+
+.group-tick line {
+  stroke: #000;
+}
+
+.ribbons {
+  fill-opacity: 0.67;
+}
+
+</style>
+<svg width="960" height="960"></svg>
+<script src="d3.js"></script>
+<script src="http://d3js.org/d3.v4.0.0-alpha.50.min.js"></script>
+<script src="http://d3js.org/d3-chord.v0.0.min.js"></script>
+<script>
+
+// From http://mkweb.bcgsc.ca/circos/guide/tables/
+/*
+var matrix = [
+  [11975,  5871, 8916, 2868],
+  [ 1951, 10048, 2060, 6171],
+  [ 8010, 16145, 8090, 8045],
+  [ 1013,   990,  940, 6907]
+];
+
+var matrix = [
+    [0,0,0,0,1,0,0,0,0,0,0,0],
+    [0,0,0,0,0,1,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,1,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,0,0,0],
+    [0,1,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,1,0],
+    [0,0,0,0,0,0,0,0,0,1,0,0],
+    [0,0,1,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,1,0,0,0,0],
+    [0,0,0,0,0,0,1,0,0,0,0,0],
+    [0,0,0,1,0,0,0,0,0,0,0,0]
+];
+*/
+var matrix = [
+    [0,0,2,2,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,4],
+    [2,0,0,2,0,0,0,0,0,0,0,0],
+    [2,0,2,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,1,1,1,1,0,0,0],
+    [0,0,0,0,1,0,1,1,1,0,0,0],
+    [0,0,0,0,1,1,0,1,1,0,0,0],
+    [0,0,0,0,1,1,1,0,1,0,0,0],
+    [0,0,0,0,1,1,1,1,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,4,0,0],
+    [0,0,0,0,0,0,0,0,0,0,4,0],
+    [0,4,0,0,0,0,0,0,0,0,0,0]
+];
+
+var svg = d3.select("svg"),
+    width = +svg.attr("width"),
+    height = +svg.attr("height"),
+    outerRadius = Math.min(width, height) * 0.5 - 160,
+    innerRadius = outerRadius - 30;
+
+var formatValue = d3.formatPrefix(",.0", 1e3);
+
+var chord = d3.chord()
+    .padAngle(0.05)
+    .sortSubgroups(d3.descending);
+
+var arc = d3.arc()
+    .innerRadius(innerRadius)
+    .outerRadius(outerRadius);
+
+var ribbon = d3.ribbon()
+    .radius(innerRadius);
+
+//var color = d3.scaleOrdinal()
+  //  .domain(d3.range(4))
+    //.range(["#000000", "#FFDD89", "#957244", "#F26223", "red", "green", "blue", "yellow", "pink", "steelblue", "gold", "silver"]);
+
+var color = d3.scale.category20();
+
+var g = svg.append("g")
+    .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")")
+    .datum(chord(matrix));
+
+var group = g.append("g")
+    .attr("class", "groups")
+  .selectAll("g")
+    .data(function(chords) { return chords.groups; })
+  .enter().append("g");
+
+group.append("path")
+    .style("fill", function(d) { return color(d.index); })
+    .style("stroke", function(d) { return d3.rgb(color(d.index)).darker(); })
+    .attr("d", arc);
+
+var groupTick = group.selectAll(".group-tick")
+    .data(function(d) { return groupTicks(d, 1e3); })
+  .enter().append("g")
+    .attr("class", "group-tick")
+    .attr("transform", function(d) { return "rotate(" + (d.angle * 180 / Math.PI - 90) + ") translate(" + outerRadius + ",0)"; });
+/*
+groupTick.append("line")
+    .attr("x2", 6);
+
+groupTick
+  .filter(function(d) { return d.value % 5e3 === 0; })
+  .append("text")
+    .attr("x", 8)
+    .attr("dy", ".35em")
+    .attr("transform", function(d) { return d.angle > Math.PI ? "rotate(180) translate(-16)" : null; })
+    .style("text-anchor", function(d) { return d.angle > Math.PI ? "end" : null; })
+    .text(function(d) { return formatValue(d.value); });
+*/
+g.append("g")
+    .attr("class", "ribbons")
+  .selectAll("path")
+    .data(function(chords) { return chords; })
+  .enter().append("path")
+    .attr("d", ribbon)
+    .style("fill", function(d) { return color(d.target.index); })
+    .style("stroke", function(d) { return d3.rgb(color(d.target.index)).darker(); });
+
+// Returns an array of tick angles and values for a given group and step.
+function groupTicks(d, step) {
+  var k = (d.endAngle - d.startAngle) / d.value;
+  return d3.range(0, d.value, step).map(function(value) {
+    return {value: value, angle: value * k + d.startAngle};
+  });
+}
+
+var cx = width / 2;
+var cy = height / 2;
+var r = Math.min(width, height) * 0.5 - 160 + 10;
+
+var ang15 = Math.PI/12;
+
+var data1 = [
+    {"x0": cx + (r)*Math.sin(ang15), "y0": cy - (r)*Math.cos(ang15), "x1": cx + (r+2*7.4)*Math.sin(ang15), "y1": cy - (r+2*7.4)*Math.cos(ang15)},
+    {"x0": cx + (r+3)*Math.sin(ang15*2), "y0": cy - (r+3)*Math.cos(ang15*2), "x1": cx + (r+2*10.9)*Math.sin(ang15*2), "y1": cy - (r+2*10.9)*Math.cos(ang15*2)},
+    {"x0": cx + (r)*Math.sin(ang15*3), "y0": cy - (r)*Math.cos(ang15*3), "x1": cx + (r+2*7.9)*Math.sin(ang15*3), "y1": cy - (r+2*7.9)*Math.cos(ang15*3)},
+
+    {"x0": cx + (r)*Math.sin(ang15*3), "y0": cy - (r)*Math.cos(ang15*3), "x1": cx + (r+2*7.9)*Math.sin(ang15*3), "y1": cy - (r+2*7.9)*Math.cos(ang15*3)},
+    {"x0": cx + (r+3)*Math.sin(ang15*4), "y0": cy - (r+3)*Math.cos(ang15*4), "x1": cx + (r+2*10.9)*Math.sin(ang15*4), "y1": cy - (r+2*10.9)*Math.cos(ang15*4)},
+    {"x0": cx + (r)*Math.sin(ang15*5), "y0": cy - (r)*Math.cos(ang15*5), "x1": cx + (r+2*7.4)*Math.sin(ang15*5), "y1": cy - (r+2*7.4)*Math.cos(ang15*5)},
+
+    {"x0": cx + (r)*Math.sin(ang15*5), "y0": cy - (r)*Math.cos(ang15*5), "x1": cx + (r+2*7.4)*Math.sin(ang15*5), "y1": cy - (r+2*7.4)*Math.cos(ang15*5)},
+    {"x0": cx + (r+3)*Math.sin(ang15*6), "y0": cy - (r+3)*Math.cos(ang15*6), "x1": cx + (r+2*10.4)*Math.sin(ang15*6), "y1": cy - (r+2*10.4)*Math.cos(ang15*6)},
+    {"x0": cx + (r)*Math.sin(ang15*7), "y0": cy - (r)*Math.cos(ang15*7), "x1": cx + (r+2*7.2)*Math.sin(ang15*7), "y1": cy - (r+2*7.2)*Math.cos(ang15*7)},
+
+    {"x0": cx + (r)*Math.sin(ang15*7), "y0": cy - (r)*Math.cos(ang15*7), "x1": cx + (r+2*7.2)*Math.sin(ang15*7), "y1": cy - (r+2*7.2)*Math.cos(ang15*7)},
+    {"x0": cx + (r+3)*Math.sin(ang15*8), "y0": cy - (r+3)*Math.cos(ang15*8), "x1": cx + (r+2*11)*Math.sin(ang15*8), "y1": cy - (r+2*11)*Math.cos(ang15*8)},
+    {"x0": cx + (r)*Math.sin(ang15*9), "y0": cy - (r)*Math.cos(ang15*9), "x1": cx + (r+2*8)*Math.sin(ang15*9), "y1": cy - (r+2*8)*Math.cos(ang15*9)},
+
+    {"x0": cx + (r)*Math.sin(ang15*9), "y0": cy - (r)*Math.cos(ang15*9), "x1": cx + (r+2*8)*Math.sin(ang15*9), "y1": cy - (r+2*8)*Math.cos(ang15*9)},
+    {"x0": cx + (r+3)*Math.sin(ang15*10), "y0": cy - (r+3)*Math.cos(ang15*10), "x1": cx + (r+2*11)*Math.sin(ang15*10), "y1": cy - (r+2*11)*Math.cos(ang15*10)},
+    {"x0": cx + (r)*Math.sin(ang15*11), "y0": cy - (r)*Math.cos(ang15*11), "x1": cx + (r+2*8)*Math.sin(ang15*11), "y1": cy - (r+2*8)*Math.cos(ang15*11)},
+
+    {"x0": cx + (r)*Math.sin(ang15*11), "y0": cy - (r)*Math.cos(ang15*11), "x1": cx + (r+2*8)*Math.sin(ang15*11), "y1": cy - (r+2*8)*Math.cos(ang15*11)},
+    {"x0": cx + (r+3)*Math.sin(ang15*12), "y0": cy - (r+3)*Math.cos(ang15*12), "x1": cx + (r+2*11)*Math.sin(ang15*12), "y1": cy - (r+2*11)*Math.cos(ang15*12)},
+    {"x0": cx + (r)*Math.sin(ang15*13), "y0": cy - (r)*Math.cos(ang15*13), "x1": cx + (r+2*8)*Math.sin(ang15*13), "y1": cy - (r+2*8)*Math.cos(ang15*13)},
+
+    {"x0": cx + (r)*Math.sin(ang15*13), "y0": cy - (r)*Math.cos(ang15*13), "x1": cx + (r+2*8)*Math.sin(ang15*13), "y1": cy - (r+2*8)*Math.cos(ang15*13)},
+    {"x0": cx + (r+3)*Math.sin(ang15*14), "y0": cy - (r+3)*Math.cos(ang15*14), "x1": cx + (r+2*11)*Math.sin(ang15*14), "y1": cy - (r+2*11)*Math.cos(ang15*14)},
+    {"x0": cx + (r)*Math.sin(ang15*15), "y0": cy - (r)*Math.cos(ang15*15), "x1": cx + (r+2*8)*Math.sin(ang15*15), "y1": cy - (r+2*8)*Math.cos(ang15*15)},
+
+    {"x0": cx + (r)*Math.sin(ang15*15), "y0": cy - (r)*Math.cos(ang15*15), "x1": cx + (r+2*8)*Math.sin(ang15*15), "y1": cy - (r+2*8)*Math.cos(ang15*15)},
+    {"x0": cx + (r+3)*Math.sin(ang15*16), "y0": cy - (r+3)*Math.cos(ang15*16), "x1": cx + (r+2*11)*Math.sin(ang15*16), "y1": cy - (r+2*11)*Math.cos(ang15*16)},
+    {"x0": cx + (r)*Math.sin(ang15*17), "y0": cy - (r)*Math.cos(ang15*17), "x1": cx + (r+2*8)*Math.sin(ang15*17), "y1": cy - (r+2*8)*Math.cos(ang15*17)},
+
+    {"x0": cx + (r)*Math.sin(ang15*17), "y0": cy - (r)*Math.cos(ang15*17), "x1": cx + (r+2*8)*Math.sin(ang15*17), "y1": cy - (r+2*8)*Math.cos(ang15*17)},
+    {"x0": cx + (r+3)*Math.sin(ang15*18), "y0": cy - (r+3)*Math.cos(ang15*18), "x1": cx + (r+2*11)*Math.sin(ang15*18), "y1": cy - (r+2*11)*Math.cos(ang15*18)},
+    {"x0": cx + (r)*Math.sin(ang15*19), "y0": cy - (r)*Math.cos(ang15*19), "x1": cx + (r+2*6)*Math.sin(ang15*19), "y1": cy - (r+2*6)*Math.cos(ang15*19)},
+
+    {"x0": cx + (r)*Math.sin(ang15*19), "y0": cy - (r)*Math.cos(ang15*19), "x1": cx + (r+2*6)*Math.sin(ang15*19), "y1": cy - (r+2*6)*Math.cos(ang15*19)},
+    {"x0": cx + (r+3)*Math.sin(ang15*20), "y0": cy - (r+3)*Math.cos(ang15*20), "x1": cx + (r+2*11.5)*Math.sin(ang15*20), "y1": cy - (r+2*11.5)*Math.cos(ang15*20)},
+    {"x0": cx + (r)*Math.sin(ang15*21), "y0": cy - (r)*Math.cos(ang15*21), "x1": cx + (r+2*8.5)*Math.sin(ang15*21), "y1": cy - (r+2*8.5)*Math.cos(ang15*21)},
+
+    {"x0": cx + (r)*Math.sin(ang15*21), "y0": cy - (r)*Math.cos(ang15*21), "x1": cx + (r+2*8.5)*Math.sin(ang15*21), "y1": cy - (r+2*8.5)*Math.cos(ang15*21)},
+    {"x0": cx + (r+3)*Math.sin(ang15*22), "y0": cy - (r+3)*Math.cos(ang15*22), "x1": cx + (r+2*11.5)*Math.sin(ang15*22), "y1": cy - (r+2*11.5)*Math.cos(ang15*22)},
+    {"x0": cx + (r)*Math.sin(ang15*23), "y0": cy - (r)*Math.cos(ang15*23), "x1": cx + (r+2*6)*Math.sin(ang15*23), "y1": cy - (r+2*6)*Math.cos(ang15*23)},
+
+    {"x0": cx + (r)*Math.sin(ang15*23), "y0": cy - (r)*Math.cos(ang15*23), "x1": cx + (r+2*6)*Math.sin(ang15*23), "y1": cy - (r+2*6)*Math.cos(ang15*23)},
+    {"x0": cx + (r+3)*Math.sin(ang15*24), "y0": cy - (r+3)*Math.cos(ang15*24), "x1": cx + (r+2*10.4)*Math.sin(ang15*24), "y1": cy - (r+2*10.4)*Math.cos(ang15*24)},
+    {"x0": cx + (r)*Math.sin(ang15*25), "y0": cy - (r)*Math.cos(ang15*25), "x1": cx + (r+2*7.4)*Math.sin(ang15*25), "y1": cy - (r+2*7.4)*Math.cos(ang15*25)},
+]
+
+var data2 = [
+    {"x0": cx + (r+2*7.4)*Math.sin(ang15), "y0": cy - (r+2*7.4)*Math.cos(ang15), "x1": cx + (r+2*14.3)*Math.sin(ang15), "y1": cy - (r+2*14.3)*Math.cos(ang15)}, 
+    {"x0": cx + (r+2*10.9)*Math.sin(ang15*2), "y0": cy - (r+2*10.9)*Math.cos(ang15*2), "x1": cx + (r+2*17.9)*Math.sin(ang15*2), "y1": cy - (r+2*17.9)*Math.cos(ang15*2)}, 
+    {"x0": cx + (r+2*7.9)*Math.sin(ang15*3), "y0": cy - (r+2*7.9)*Math.cos(ang15*3), "x1": cx + (r+2*14.9)*Math.sin(ang15*3), "y1": cy - (r+2*14.9)*Math.cos(ang15*3)},
+
+    {"x0": cx + (r+2*7.9)*Math.sin(ang15*3), "y0": cy - (r+2*7.9)*Math.cos(ang15*3), "x1": cx + (r+2*14.9)*Math.sin(ang15*3), "y1": cy - (r+2*14.9)*Math.cos(ang15*3)}, 
+    {"x0": cx + (r+2*10.9)*Math.sin(ang15*4), "y0": cy - (r+2*10.9)*Math.cos(ang15*4), "x1": cx + (r+2*18.1)*Math.sin(ang15*4), "y1": cy - (r+2*18.1)*Math.cos(ang15*4)},
+    {"x0": cx + (r+2*7.4)*Math.sin(ang15*5), "y0": cy - (r+2*7.4)*Math.cos(ang15*5), "x1": cx + (r+2*15.1)*Math.sin(ang15*5), "y1": cy - (r+2*15.1)*Math.cos(ang15*5)},
+
+    {"x0": cx + (r+2*7.4)*Math.sin(ang15*5), "y0": cy - (r+2*7.4)*Math.cos(ang15*5), "x1": cx + (r+2*15.1)*Math.sin(ang15*5), "y1": cy - (r+2*15.1)*Math.cos(ang15*5)}, 
+    {"x0": cx + (r+2*10.4)*Math.sin(ang15*6), "y0": cy - (r+2*10.4)*Math.cos(ang15*6), "x1": cx + (r+2*18.1)*Math.sin(ang15*6), "y1": cy - (r+2*18.1)*Math.cos(ang15*6)},
+    {"x0": cx + (r+2*7.2)*Math.sin(ang15*7), "y0": cy - (r+2*7.2)*Math.cos(ang15*7), "x1": cx + (r+2*14.3)*Math.sin(ang15*7), "y1": cy - (r+2*14.3)*Math.cos(ang15*7)},
+
+    {"x0": cx + (r+2*7.2)*Math.sin(ang15*7), "y0": cy - (r+2*7.2)*Math.cos(ang15*7), "x1": cx + (r+2*14.3)*Math.sin(ang15*7), "y1": cy - (r+2*14.3)*Math.cos(ang15*7)}, 
+    {"x0": cx + (r+2*11)*Math.sin(ang15*8), "y0": cy - (r+2*11)*Math.cos(ang15*8), "x1": cx + (r+2*17.3)*Math.sin(ang15*8), "y1": cy - (r+2*17.3)*Math.cos(ang15*8)},
+    {"x0": cx + (r+2*8)*Math.sin(ang15*9), "y0": cy - (r+2*8)*Math.cos(ang15*9), "x1": cx + (r+2*11.7)*Math.sin(ang15*9), "y1": cy - (r+2*11.7)*Math.cos(ang15*9)},
+
+    {"x0": cx + (r+2*8)*Math.sin(ang15*9), "y0": cy - (r+2*8)*Math.cos(ang15*9), "x1": cx + (r+2*11.7)*Math.sin(ang15*9), "y1": cy - (r+2*11.7)*Math.cos(ang15*9)}, 
+    {"x0": cx + (r+2*11)*Math.sin(ang15*10), "y0": cy - (r+2*11)*Math.cos(ang15*10), "x1": cx + (r+2*14.7)*Math.sin(ang15*10), "y1": cy - (r+2*14.7)*Math.cos(ang15*10)},
+    {"x0": cx + (r+2*8)*Math.sin(ang15*11), "y0": cy - (r+2*8)*Math.cos(ang15*11), "x1": cx + (r+2*11.6)*Math.sin(ang15*11), "y1": cy - (r+2*11.6)*Math.cos(ang15*11)},
+
+    {"x0": cx + (r+2*8)*Math.sin(ang15*11), "y0": cy - (r+2*8)*Math.cos(ang15*11), "x1": cx + (r+2*11.6)*Math.sin(ang15*11), "y1": cy - (r+2*11.6)*Math.cos(ang15*11)}, 
+    {"x0": cx + (r+2*11)*Math.sin(ang15*12), "y0": cy - (r+2*11)*Math.cos(ang15*12), "x1": cx + (r+2*14.9)*Math.sin(ang15*12), "y1": cy - (r+2*14.9)*Math.cos(ang15*12)},
+    {"x0": cx + (r+2*8)*Math.sin(ang15*13), "y0": cy - (r+2*8)*Math.cos(ang15*13), "x1": cx + (r+2*11.9)*Math.sin(ang15*13), "y1": cy - (r+2*11.9)*Math.cos(ang15*13)},
+
+    {"x0": cx + (r+2*8)*Math.sin(ang15*13), "y0": cy - (r+2*8)*Math.cos(ang15*13), "x1": cx + (r+2*11.9)*Math.sin(ang15*13), "y1": cy - (r+2*11.9)*Math.cos(ang15*13)}, 
+    {"x0": cx + (r+2*11)*Math.sin(ang15*14), "y0": cy - (r+2*11)*Math.cos(ang15*14), "x1": cx + (r+2*14.9)*Math.sin(ang15*14), "y1": cy - (r+2*14.9)*Math.cos(ang15*14)},
+    {"x0": cx + (r+2*8)*Math.sin(ang15*15), "y0": cy - (r+2*8)*Math.cos(ang15*15), "x1": cx + (r+2*11.9)*Math.sin(ang15*15), "y1": cy - (r+2*11.9)*Math.cos(ang15*15)},
+
+    {"x0": cx + (r+2*8)*Math.sin(ang15*15), "y0": cy - (r+2*8)*Math.cos(ang15*15), "x1": cx + (r+2*11.9)*Math.sin(ang15*15), "y1": cy - (r+2*11.9)*Math.cos(ang15*15)}, 
+    {"x0": cx + (r+2*11)*Math.sin(ang15*16), "y0": cy - (r+2*11)*Math.cos(ang15*16), "x1": cx + (r+2*16.5)*Math.sin(ang15*16), "y1": cy - (r+2*16.5)*Math.cos(ang15*16)},
+    {"x0": cx + (r+2*8)*Math.sin(ang15*17), "y0": cy - (r+2*8)*Math.cos(ang15*17), "x1": cx + (r+2*13.5)*Math.sin(ang15*17), "y1": cy - (r+2*13.5)*Math.cos(ang15*17)},
+
+    {"x0": cx + (r+2*8)*Math.sin(ang15*17), "y0": cy - (r+2*8)*Math.cos(ang15*17), "x1": cx + (r+2*13.5)*Math.sin(ang15*17), "y1": cy - (r+2*13.5)*Math.cos(ang15*17)}, 
+    {"x0": cx + (r+2*11)*Math.sin(ang15*18), "y0": cy - (r+2*11)*Math.cos(ang15*18), "x1": cx + (r+2*16.5)*Math.sin(ang15*18), "y1": cy - (r+2*16.5)*Math.cos(ang15*18)},
+    {"x0": cx + (r+2*6)*Math.sin(ang15*19), "y0": cy - (r+2*6)*Math.cos(ang15*19), "x1": cx + (r+2*12)*Math.sin(ang15*19), "y1": cy - (r+2*12)*Math.cos(ang15*19)},
+
+    {"x0": cx + (r+2*6)*Math.sin(ang15*19), "y0": cy - (r+2*6)*Math.cos(ang15*19), "x1": cx + (r+2*12)*Math.sin(ang15*19), "y1": cy - (r+2*12)*Math.cos(ang15*19)}, 
+    {"x0": cx + (r+2*11.5)*Math.sin(ang15*20), "y0": cy - (r+2*11.5)*Math.cos(ang15*20), "x1": cx + (r+2*18.3)*Math.sin(ang15*20), "y1": cy - (r+2*18.3)*Math.cos(ang15*20)},
+    {"x0": cx + (r+2*8.5)*Math.sin(ang15*21), "y0": cy - (r+2*8.5)*Math.cos(ang15*21), "x1": cx + (r+2*15.3)*Math.sin(ang15*21), "y1": cy - (r+2*15.3)*Math.cos(ang15*21)},
+
+    {"x0": cx + (r+2*8.5)*Math.sin(ang15*21), "y0": cy - (r+2*8.5)*Math.cos(ang15*21), "x1": cx + (r+2*15.3)*Math.sin(ang15*21), "y1": cy - (r+2*15.3)*Math.cos(ang15*21)}, 
+    {"x0": cx + (r+2*11.5)*Math.sin(ang15*22), "y0": cy - (r+2*11.5)*Math.cos(ang15*22), "x1": cx + (r+2*18.3)*Math.sin(ang15*22), "y1": cy - (r+2*18.3)*Math.cos(ang15*22)},
+    {"x0": cx + (r+2*6)*Math.sin(ang15*23), "y0": cy - (r+2*6)*Math.cos(ang15*23), "x1": cx + (r+2*13.2)*Math.sin(ang15*23), "y1": cy - (r+2*13.2)*Math.cos(ang15*23)},
+
+    {"x0": cx + (r+2*6)*Math.sin(ang15*23), "y0": cy - (r+2*6)*Math.cos(ang15*23), "x1": cx + (r+2*13.2)*Math.sin(ang15*23), "y1": cy - (r+2*13.2)*Math.cos(ang15*23)}, 
+    {"x0": cx + (r+2*10.4)*Math.sin(ang15*24), "y0": cy - (r+2*10.4)*Math.cos(ang15*24), "x1": cx + (r+2*17.3)*Math.sin(ang15*24), "y1": cy - (r+2*17.3)*Math.cos(ang15*24)},
+    {"x0": cx + (r+2*7.4)*Math.sin(ang15*25), "y0": cy - (r+2*7.4)*Math.cos(ang15*25), "x1": cx + (r+2*14.3)*Math.sin(ang15*25), "y1": cy - (r+2*14.3)*Math.cos(ang15*25)}, 
+]
+
+var data3 = [
+    {"x0": cx + (r+2*14.3)*Math.sin(ang15), "y0": cy - (r+2*14.3)*Math.cos(ang15), "x1": cx + (r+2*22.1)*Math.sin(ang15), "y1": cy - (r+2*22.1)*Math.cos(ang15)}, 
+    {"x0": cx + (r+2*17.9)*Math.sin(ang15*2), "y0": cy - (r+2*17.9)*Math.cos(ang15*2), "x1": cx + (r+2*25.9)*Math.sin(ang15*2), "y1": cy - (r+2*25.9)*Math.cos(ang15*2)}, 
+    {"x0": cx + (r+2*14.9)*Math.sin(ang15*3), "y0": cy - (r+2*14.9)*Math.cos(ang15*3), "x1": cx + (r+2*22.9)*Math.sin(ang15*3), "y1": cy - (r+2*22.9)*Math.cos(ang15*3)},
+
+    {"x0": cx + (r+2*14.9)*Math.sin(ang15*3), "y0": cy - (r+2*14.9)*Math.cos(ang15*3), "x1": cx + (r+2*22.9)*Math.sin(ang15*3), "y1": cy - (r+2*22.9)*Math.cos(ang15*3)}, 
+    {"x0": cx + (r+2*18.1)*Math.sin(ang15*4), "y0": cy - (r+2*18.1)*Math.cos(ang15*4), "x1": cx + (r+2*26.3)*Math.sin(ang15*4), "y1": cy - (r+2*26.3)*Math.cos(ang15*4)},
+    {"x0": cx + (r+2*15.1)*Math.sin(ang15*5), "y0": cy - (r+2*15.1)*Math.cos(ang15*5), "x1": cx + (r+2*23.3)*Math.sin(ang15*5), "y1": cy - (r+2*23.3)*Math.cos(ang15*5)},
+
+    {"x0": cx + (r+2*15.1)*Math.sin(ang15*5), "y0": cy - (r+2*15.1)*Math.cos(ang15*5), "x1": cx + (r+2*23.3)*Math.sin(ang15*5), "y1": cy - (r+2*23.3)*Math.cos(ang15*5)}, 
+    {"x0": cx + (r+2*18.1)*Math.sin(ang15*6), "y0": cy - (r+2*18.1)*Math.cos(ang15*6), "x1": cx + (r+2*26.3)*Math.sin(ang15*6), "y1": cy - (r+2*26.3)*Math.cos(ang15*6)},
+    {"x0": cx + (r+2*14.3)*Math.sin(ang15*7), "y0": cy - (r+2*14.3)*Math.cos(ang15*7), "x1": cx + (r+2*22.7)*Math.sin(ang15*7), "y1": cy - (r+2*22.7)*Math.cos(ang15*7)},
+
+    {"x0": cx + (r+2*14.3)*Math.sin(ang15*7), "y0": cy - (r+2*14.3)*Math.cos(ang15*7), "x1": cx + (r+2*22.7)*Math.sin(ang15*7), "y1": cy - (r+2*22.7)*Math.cos(ang15*7)}, 
+    {"x0": cx + (r+2*17.3)*Math.sin(ang15*8), "y0": cy - (r+2*17.3)*Math.cos(ang15*8), "x1": cx + (r+2*25.7)*Math.sin(ang15*8), "y1": cy - (r+2*25.7)*Math.cos(ang15*8)},
+    {"x0": cx + (r+2*11.7)*Math.sin(ang15*9), "y0": cy - (r+2*11.7)*Math.cos(ang15*9), "x1": cx + (r+2*20.3)*Math.sin(ang15*9), "y1": cy - (r+2*20.3)*Math.cos(ang15*9)},
+
+    {"x0": cx + (r+2*11.7)*Math.sin(ang15*9), "y0": cy - (r+2*11.7)*Math.cos(ang15*9), "x1": cx + (r+2*20.3)*Math.sin(ang15*9), "y1": cy - (r+2*20.3)*Math.cos(ang15*9)}, 
+    {"x0": cx + (r+2*14.7)*Math.sin(ang15*10), "y0": cy - (r+2*14.7)*Math.cos(ang15*10), "x1": cx + (r+2*23.4)*Math.sin(ang15*10), "y1": cy - (r+2*23.4)*Math.cos(ang15*10)},
+    {"x0": cx + (r+2*11.6)*Math.sin(ang15*11), "y0": cy - (r+2*11.6)*Math.cos(ang15*11), "x1": cx + (r+2*20.4)*Math.sin(ang15*11), "y1": cy - (r+2*20.4)*Math.cos(ang15*11)},
+
+    {"x0": cx + (r+2*11.6)*Math.sin(ang15*11), "y0": cy - (r+2*11.6)*Math.cos(ang15*11), "x1": cx + (r+2*20.4)*Math.sin(ang15*11), "y1": cy - (r+2*20.4)*Math.cos(ang15*11)}, 
+    {"x0": cx + (r+2*14.9)*Math.sin(ang15*12), "y0": cy - (r+2*14.9)*Math.cos(ang15*12), "x1": cx + (r+2*23.9)*Math.sin(ang15*12), "y1": cy - (r+2*23.9)*Math.cos(ang15*12)},
+    {"x0": cx + (r+2*11.9)*Math.sin(ang15*13), "y0": cy - (r+2*11.9)*Math.cos(ang15*13), "x1": cx + (r+2*20.9)*Math.sin(ang15*13), "y1": cy - (r+2*20.9)*Math.cos(ang15*13)},
+
+    {"x0": cx + (r+2*11.9)*Math.sin(ang15*13), "y0": cy - (r+2*11.9)*Math.cos(ang15*13), "x1": cx + (r+2*20.9)*Math.sin(ang15*13), "y1": cy - (r+2*20.9)*Math.cos(ang15*13)}, 
+    {"x0": cx + (r+2*14.9)*Math.sin(ang15*14), "y0": cy - (r+2*14.9)*Math.cos(ang15*14), "x1": cx + (r+2*23.9)*Math.sin(ang15*14), "y1": cy - (r+2*23.9)*Math.cos(ang15*14)},
+    {"x0": cx + (r+2*11.9)*Math.sin(ang15*15), "y0": cy - (r+2*11.9)*Math.cos(ang15*15), "x1": cx + (r+2*20.9)*Math.sin(ang15*15), "y1": cy - (r+2*20.9)*Math.cos(ang15*15)},
+
+    {"x0": cx + (r+2*11.9)*Math.sin(ang15*15), "y0": cy - (r+2*11.9)*Math.cos(ang15*15), "x1": cx + (r+2*20.9)*Math.sin(ang15*15), "y1": cy - (r+2*20.9)*Math.cos(ang15*15)}, 
+    {"x0": cx + (r+2*16.5)*Math.sin(ang15*16), "y0": cy - (r+2*16.5)*Math.cos(ang15*16), "x1": cx + (r+2*25.9)*Math.sin(ang15*16), "y1": cy - (r+2*25.9)*Math.cos(ang15*16)},
+    {"x0": cx + (r+2*13.5)*Math.sin(ang15*17), "y0": cy - (r+2*13.5)*Math.cos(ang15*17), "x1": cx + (r+2*22.9)*Math.sin(ang15*17), "y1": cy - (r+2*22.9)*Math.cos(ang15*17)},
+
+    {"x0": cx + (r+2*13.5)*Math.sin(ang15*17), "y0": cy - (r+2*13.5)*Math.cos(ang15*17), "x1": cx + (r+2*22.9)*Math.sin(ang15*17), "y1": cy - (r+2*22.9)*Math.cos(ang15*17)}, 
+    {"x0": cx + (r+2*16.5)*Math.sin(ang15*18), "y0": cy - (r+2*16.5)*Math.cos(ang15*18), "x1": cx + (r+2*25.9)*Math.sin(ang15*18), "y1": cy - (r+2*25.9)*Math.cos(ang15*18)},
+    {"x0": cx + (r+2*12)*Math.sin(ang15*19), "y0": cy - (r+2*12)*Math.cos(ang15*19), "x1": cx + (r+2*21.6)*Math.sin(ang15*19), "y1": cy - (r+2*21.6)*Math.cos(ang15*19)},
+
+    {"x0": cx + (r+2*12)*Math.sin(ang15*19), "y0": cy - (r+2*12)*Math.cos(ang15*19), "x1": cx + (r+2*21.6)*Math.sin(ang15*19), "y1": cy - (r+2*21.6)*Math.cos(ang15*19)}, 
+    {"x0": cx + (r+2*18.3)*Math.sin(ang15*20), "y0": cy - (r+2*18.3)*Math.cos(ang15*20), "x1": cx + (r+2*28.1)*Math.sin(ang15*20), "y1": cy - (r+2*28.1)*Math.cos(ang15*20)},
+    {"x0": cx + (r+2*15.3)*Math.sin(ang15*21), "y0": cy - (r+2*15.3)*Math.cos(ang15*21), "x1": cx + (r+2*25.1)*Math.sin(ang15*21), "y1": cy - (r+2*25.1)*Math.cos(ang15*21)},
+
+    {"x0": cx + (r+2*15.3)*Math.sin(ang15*21), "y0": cy - (r+2*15.3)*Math.cos(ang15*21), "x1": cx + (r+2*25.1)*Math.sin(ang15*21), "y1": cy - (r+2*25.1)*Math.cos(ang15*21)}, 
+    {"x0": cx + (r+2*18.3)*Math.sin(ang15*22), "y0": cy - (r+2*18.3)*Math.cos(ang15*22), "x1": cx + (r+2*28.1)*Math.sin(ang15*22), "y1": cy - (r+2*28.1)*Math.cos(ang15*22)},
+    {"x0": cx + (r+2*13.2)*Math.sin(ang15*23), "y0": cy - (r+2*13.2)*Math.cos(ang15*23), "x1": cx + (r+2*23.2)*Math.sin(ang15*23), "y1": cy - (r+2*23.2)*Math.cos(ang15*23)},
+
+    {"x0": cx + (r+2*13.2)*Math.sin(ang15*23), "y0": cy - (r+2*13.2)*Math.cos(ang15*23), "x1": cx + (r+2*23.2)*Math.sin(ang15*23), "y1": cy - (r+2*23.2)*Math.cos(ang15*23)}, 
+    {"x0": cx + (r+2*17.3)*Math.sin(ang15*24), "y0": cy - (r+2*17.3)*Math.cos(ang15*24), "x1": cx + (r+2*26.2)*Math.sin(ang15*24), "y1": cy - (r+2*26.2)*Math.cos(ang15*24)},
+    {"x0": cx + (r+2*14.3)*Math.sin(ang15*25), "y0": cy - (r+2*14.3)*Math.cos(ang15*25), "x1": cx + (r+2*22.1)*Math.sin(ang15*25), "y1": cy - (r+2*22.1)*Math.cos(ang15*25)},
+]
+
+var data4 = [
+    {"x0": cx + (r+2*22.1)*Math.sin(ang15), "y0": cy - (r+2*22.1)*Math.cos(ang15), "x1": cx + (r+2*29.1)*Math.sin(ang15), "y1": cy - (r+2*29.1)*Math.cos(ang15)}, 
+    {"x0": cx + (r+2*25.9)*Math.sin(ang15*2), "y0": cy - (r+2*25.9)*Math.cos(ang15*2), "x1": cx + (r+2*32.9)*Math.sin(ang15*2), "y1": cy - (r+2*32.9)*Math.cos(ang15*2)}, 
+    {"x0": cx + (r+2*22.9)*Math.sin(ang15*3), "y0": cy - (r+2*22.9)*Math.cos(ang15*3), "x1": cx + (r+2*29.9)*Math.sin(ang15*3), "y1": cy - (r+2*29.9)*Math.cos(ang15*3)},
+
+    {"x0": cx + (r+2*22.9)*Math.sin(ang15*3), "y0": cy - (r+2*22.9)*Math.cos(ang15*3), "x1": cx + (r+2*29.9)*Math.sin(ang15*3), "y1": cy - (r+2*29.9)*Math.cos(ang15*3)}, 
+    {"x0": cx + (r+2*26.3)*Math.sin(ang15*4), "y0": cy - (r+2*26.3)*Math.cos(ang15*4), "x1": cx + (r+2*33.8)*Math.sin(ang15*4), "y1": cy - (r+2*33.8)*Math.cos(ang15*4)},
+    {"x0": cx + (r+2*23.3)*Math.sin(ang15*5), "y0": cy - (r+2*23.3)*Math.cos(ang15*5), "x1": cx + (r+2*30.8)*Math.sin(ang15*5), "y1": cy - (r+2*30.8)*Math.cos(ang15*5)},
+
+    {"x0": cx + (r+2*23.3)*Math.sin(ang15*5), "y0": cy - (r+2*23.3)*Math.cos(ang15*5), "x1": cx + (r+2*30.8)*Math.sin(ang15*5), "y1": cy - (r+2*30.8)*Math.cos(ang15*5)}, 
+    {"x0": cx + (r+2*26.3)*Math.sin(ang15*6), "y0": cy - (r+2*26.3)*Math.cos(ang15*6), "x1": cx + (r+2*33.1)*Math.sin(ang15*6), "y1": cy - (r+2*33.1)*Math.cos(ang15*6)},
+    {"x0": cx + (r+2*22.7)*Math.sin(ang15*7), "y0": cy - (r+2*22.7)*Math.cos(ang15*7), "x1": cx + (r+2*30.1)*Math.sin(ang15*7), "y1": cy - (r+2*30.1)*Math.cos(ang15*7)},
+
+    {"x0": cx + (r+2*22.7)*Math.sin(ang15*7), "y0": cy - (r+2*22.7)*Math.cos(ang15*7), "x1": cx + (r+2*30.1)*Math.sin(ang15*7), "y1": cy - (r+2*30.1)*Math.cos(ang15*7)}, 
+    {"x0": cx + (r+2*25.7)*Math.sin(ang15*8), "y0": cy - (r+2*25.7)*Math.cos(ang15*8), "x1": cx + (r+2*30.1)*Math.sin(ang15*8), "y1": cy - (r+2*30.1)*Math.cos(ang15*8)},
+    {"x0": cx + (r+2*20.3)*Math.sin(ang15*9), "y0": cy - (r+2*20.3)*Math.cos(ang15*9), "x1": cx + (r+2*27.2)*Math.sin(ang15*9), "y1": cy - (r+2*27.2)*Math.cos(ang15*9)},
+
+    {"x0": cx + (r+2*20.3)*Math.sin(ang15*9), "y0": cy - (r+2*20.3)*Math.cos(ang15*9), "x1": cx + (r+2*27.2)*Math.sin(ang15*9), "y1": cy - (r+2*27.2)*Math.cos(ang15*9)}, 
+    {"x0": cx + (r+2*23.4)*Math.sin(ang15*10), "y0": cy - (r+2*23.4)*Math.cos(ang15*10), "x1": cx + (r+2*30.2)*Math.sin(ang15*10), "y1": cy - (r+2*30.2)*Math.cos(ang15*10)},
+    {"x0": cx + (r+2*20.4)*Math.sin(ang15*11), "y0": cy - (r+2*20.4)*Math.cos(ang15*11), "x1": cx + (r+2*27.2)*Math.sin(ang15*11), "y1": cy - (r+2*27.2)*Math.cos(ang15*11)},
+
+    {"x0": cx + (r+2*20.4)*Math.sin(ang15*11), "y0": cy - (r+2*20.4)*Math.cos(ang15*11), "x1": cx + (r+2*27.2)*Math.sin(ang15*11), "y1": cy - (r+2*27.2)*Math.cos(ang15*11)}, 
+    {"x0": cx + (r+2*23.9)*Math.sin(ang15*12), "y0": cy - (r+2*23.9)*Math.cos(ang15*12), "x1": cx + (r+2*31.3)*Math.sin(ang15*12), "y1": cy - (r+2*31.3)*Math.cos(ang15*12)},
+    {"x0": cx + (r+2*20.9)*Math.sin(ang15*13), "y0": cy - (r+2*20.9)*Math.cos(ang15*13), "x1": cx + (r+2*28.3)*Math.sin(ang15*13), "y1": cy - (r+2*28.3)*Math.cos(ang15*13)},
+
+    {"x0": cx + (r+2*20.9)*Math.sin(ang15*13), "y0": cy - (r+2*20.9)*Math.cos(ang15*13), "x1": cx + (r+2*28.3)*Math.sin(ang15*13), "y1": cy - (r+2*28.3)*Math.cos(ang15*13)}, 
+    {"x0": cx + (r+2*23.9)*Math.sin(ang15*14), "y0": cy - (r+2*23.9)*Math.cos(ang15*14), "x1": cx + (r+2*31.3)*Math.sin(ang15*14), "y1": cy - (r+2*31.3)*Math.cos(ang15*14)},
+    {"x0": cx + (r+2*20.9)*Math.sin(ang15*15), "y0": cy - (r+2*20.9)*Math.cos(ang15*15), "x1": cx + (r+2*28.3)*Math.sin(ang15*15), "y1": cy - (r+2*28.3)*Math.cos(ang15*15)},
+
+    {"x0": cx + (r+2*20.9)*Math.sin(ang15*15), "y0": cy - (r+2*20.9)*Math.cos(ang15*15), "x1": cx + (r+2*28.3)*Math.sin(ang15*15), "y1": cy - (r+2*28.3)*Math.cos(ang15*15)}, 
+    {"x0": cx + (r+2*25.9)*Math.sin(ang15*16), "y0": cy - (r+2*25.9)*Math.cos(ang15*16), "x1": cx + (r+2*32.7)*Math.sin(ang15*16), "y1": cy - (r+2*32.7)*Math.cos(ang15*16)},
+    {"x0": cx + (r+2*22.9)*Math.sin(ang15*17), "y0": cy - (r+2*22.9)*Math.cos(ang15*17), "x1": cx + (r+2*29.7)*Math.sin(ang15*17), "y1": cy - (r+2*29.7)*Math.cos(ang15*17)},
+
+    {"x0": cx + (r+2*22.9)*Math.sin(ang15*17), "y0": cy - (r+2*22.9)*Math.cos(ang15*17), "x1": cx + (r+2*29.7)*Math.sin(ang15*17), "y1": cy - (r+2*29.7)*Math.cos(ang15*17)}, 
+    {"x0": cx + (r+2*25.9)*Math.sin(ang15*18), "y0": cy - (r+2*25.9)*Math.cos(ang15*18), "x1": cx + (r+2*32.7)*Math.sin(ang15*18), "y1": cy - (r+2*32.7)*Math.cos(ang15*18)},
+    {"x0": cx + (r+2*21.6)*Math.sin(ang15*19), "y0": cy - (r+2*21.6)*Math.cos(ang15*19), "x1": cx + (r+2*28.4)*Math.sin(ang15*19), "y1": cy - (r+2*28.4)*Math.cos(ang15*19)},
+
+    {"x0": cx + (r+2*21.6)*Math.sin(ang15*19), "y0": cy - (r+2*21.6)*Math.cos(ang15*19), "x1": cx + (r+2*28.4)*Math.sin(ang15*19), "y1": cy - (r+2*28.4)*Math.cos(ang15*19)}, 
+    {"x0": cx + (r+2*28.1)*Math.sin(ang15*20), "y0": cy - (r+2*28.1)*Math.cos(ang15*20), "x1": cx + (r+2*34.5)*Math.sin(ang15*20), "y1": cy - (r+2*34.5)*Math.cos(ang15*20)},
+    {"x0": cx + (r+2*25.1)*Math.sin(ang15*21), "y0": cy - (r+2*25.1)*Math.cos(ang15*21), "x1": cx + (r+2*31.5)*Math.sin(ang15*21), "y1": cy - (r+2*31.5)*Math.cos(ang15*21)},
+
+    {"x0": cx + (r+2*25.1)*Math.sin(ang15*21), "y0": cy - (r+2*25.1)*Math.cos(ang15*21), "x1": cx + (r+2*31.5)*Math.sin(ang15*21), "y1": cy - (r+2*31.5)*Math.cos(ang15*21)}, 
+    {"x0": cx + (r+2*28.1)*Math.sin(ang15*22), "y0": cy - (r+2*28.1)*Math.cos(ang15*22), "x1": cx + (r+2*33.7)*Math.sin(ang15*22), "y1": cy - (r+2*33.7)*Math.cos(ang15*22)},
+    {"x0": cx + (r+2*23.2)*Math.sin(ang15*23), "y0": cy - (r+2*23.2)*Math.cos(ang15*23), "x1": cx + (r+2*30.7)*Math.sin(ang15*23), "y1": cy - (r+2*30.7)*Math.cos(ang15*23)},
+
+    {"x0": cx + (r+2*23.2)*Math.sin(ang15*23), "y0": cy - (r+2*23.2)*Math.cos(ang15*23), "x1": cx + (r+2*30.7)*Math.sin(ang15*23), "y1": cy - (r+2*30.7)*Math.cos(ang15*23)}, 
+    {"x0": cx + (r+2*26.2)*Math.sin(ang15*24), "y0": cy - (r+2*26.2)*Math.cos(ang15*24), "x1": cx + (r+2*33.7)*Math.sin(ang15*24), "y1": cy - (r+2*33.7)*Math.cos(ang15*24)},
+    {"x0": cx + (r+2*22.1)*Math.sin(ang15*25), "y0": cy - (r+2*22.1)*Math.cos(ang15*25), "x1": cx + (r+2*29.1)*Math.sin(ang15*25), "y1": cy - (r+2*29.1)*Math.cos(ang15*25)},
+];
+
+var data5 = [
+    {"x0": cx + (r+2*29.1)*Math.sin(ang15), "y0": cy - (r+2*29.1)*Math.cos(ang15), "x1": cx + (r+2*33.9)*Math.sin(ang15), "y1": cy - (r+2*33.9)*Math.cos(ang15)}, 
+    {"x0": cx + (r+2*32.9)*Math.sin(ang15*2), "y0": cy - (r+2*32.9)*Math.cos(ang15*2), "x1": cx + (r+2*37.8)*Math.sin(ang15*2), "y1": cy - (r+2*37.8)*Math.cos(ang15*2)}, 
+    {"x0": cx + (r+2*29.9)*Math.sin(ang15*3), "y0": cy - (r+2*29.9)*Math.cos(ang15*3), "x1": cx + (r+2*34.8)*Math.sin(ang15*3), "y1": cy - (r+2*34.8)*Math.cos(ang15*3)},
+
+    {"x0": cx + (r+2*29.9)*Math.sin(ang15*3), "y0": cy - (r+2*29.9)*Math.cos(ang15*3), "x1": cx + (r+2*34.8)*Math.sin(ang15*3), "y1": cy - (r+2*34.8)*Math.cos(ang15*3)}, 
+    {"x0": cx + (r+2*33.8)*Math.sin(ang15*4), "y0": cy - (r+2*33.8)*Math.cos(ang15*4), "x1": cx + (r+2*38)*Math.sin(ang15*4), "y1": cy - (r+2*38)*Math.cos(ang15*4)},
+    {"x0": cx + (r+2*30.8)*Math.sin(ang15*5), "y0": cy - (r+2*30.8)*Math.cos(ang15*5), "x1": cx + (r+2*35)*Math.sin(ang15*5), "y1": cy - (r+2*35)*Math.cos(ang15*5)},
+
+    {"x0": cx + (r+2*30.8)*Math.sin(ang15*5), "y0": cy - (r+2*30.8)*Math.cos(ang15*5), "x1": cx + (r+2*35)*Math.sin(ang15*5), "y1": cy - (r+2*35)*Math.cos(ang15*5)}, 
+    {"x0": cx + (r+2*33.1)*Math.sin(ang15*6), "y0": cy - (r+2*33.1)*Math.cos(ang15*6), "x1": cx + (r+2*38)*Math.sin(ang15*6), "y1": cy - (r+2*38)*Math.cos(ang15*6)},
+    {"x0": cx + (r+2*30.1)*Math.sin(ang15*7), "y0": cy - (r+2*30.1)*Math.cos(ang15*7), "x1": cx + (r+2*34.9)*Math.sin(ang15*7), "y1": cy - (r+2*34.9)*Math.cos(ang15*7)},
+
+    {"x0": cx + (r+2*30.1)*Math.sin(ang15*7), "y0": cy - (r+2*30.1)*Math.cos(ang15*7), "x1": cx + (r+2*34.9)*Math.sin(ang15*7), "y1": cy - (r+2*34.9)*Math.cos(ang15*7)}, 
+    {"x0": cx + (r+2*30.1)*Math.sin(ang15*8), "y0": cy - (r+2*30.1)*Math.cos(ang15*8), "x1": cx + (r+2*35.6)*Math.sin(ang15*8), "y1": cy - (r+2*35.6)*Math.cos(ang15*8)},
+    {"x0": cx + (r+2*27.2)*Math.sin(ang15*9), "y0": cy - (r+2*27.2)*Math.cos(ang15*9), "x1": cx + (r+2*32.6)*Math.sin(ang15*9), "y1": cy - (r+2*32.6)*Math.cos(ang15*9)},
+
+    {"x0": cx + (r+2*27.2)*Math.sin(ang15*9), "y0": cy - (r+2*27.2)*Math.cos(ang15*9), "x1": cx + (r+2*32.6)*Math.sin(ang15*9), "y1": cy - (r+2*32.6)*Math.cos(ang15*9)}, 
+    {"x0": cx + (r+2*30.2)*Math.sin(ang15*10), "y0": cy - (r+2*30.2)*Math.cos(ang15*10), "x1": cx + (r+2*35.7)*Math.sin(ang15*10), "y1": cy - (r+2*35.7)*Math.cos(ang15*10)},
+    {"x0": cx + (r+2*27.2)*Math.sin(ang15*11), "y0": cy - (r+2*27.2)*Math.cos(ang15*11), "x1": cx + (r+2*32.7)*Math.sin(ang15*11), "y1": cy - (r+2*32.7)*Math.cos(ang15*11)},
+
+    {"x0": cx + (r+2*27.2)*Math.sin(ang15*11), "y0": cy - (r+2*27.2)*Math.cos(ang15*11), "x1": cx + (r+2*32.7)*Math.sin(ang15*11), "y1": cy - (r+2*32.7)*Math.cos(ang15*11)}, 
+    {"x0": cx + (r+2*31.3)*Math.sin(ang15*12), "y0": cy - (r+2*31.3)*Math.cos(ang15*12), "x1": cx + (r+2*36.6)*Math.sin(ang15*12), "y1": cy - (r+2*36.6)*Math.cos(ang15*12)},
+    {"x0": cx + (r+2*28.3)*Math.sin(ang15*13), "y0": cy - (r+2*28.3)*Math.cos(ang15*13), "x1": cx + (r+2*33.6)*Math.sin(ang15*13), "y1": cy - (r+2*33.6)*Math.cos(ang15*13)},
+
+    {"x0": cx + (r+2*28.3)*Math.sin(ang15*13), "y0": cy - (r+2*28.3)*Math.cos(ang15*13), "x1": cx + (r+2*33.6)*Math.sin(ang15*13), "y1": cy - (r+2*33.6)*Math.cos(ang15*13)}, 
+    {"x0": cx + (r+2*31.3)*Math.sin(ang15*14), "y0": cy - (r+2*31.3)*Math.cos(ang15*14), "x1": cx + (r+2*36.6)*Math.sin(ang15*14), "y1": cy - (r+2*36.6)*Math.cos(ang15*14)},
+    {"x0": cx + (r+2*28.3)*Math.sin(ang15*15), "y0": cy - (r+2*28.3)*Math.cos(ang15*15), "x1": cx + (r+2*33.6)*Math.sin(ang15*15), "y1": cy - (r+2*33.6)*Math.cos(ang15*15)},
+
+    {"x0": cx + (r+2*28.3)*Math.sin(ang15*15), "y0": cy - (r+2*28.3)*Math.cos(ang15*15), "x1": cx + (r+2*33.6)*Math.sin(ang15*15), "y1": cy - (r+2*33.6)*Math.cos(ang15*15)}, 
+    {"x0": cx + (r+2*32.7)*Math.sin(ang15*16), "y0": cy - (r+2*32.7)*Math.cos(ang15*16), "x1": cx + (r+2*38.2)*Math.sin(ang15*16), "y1": cy - (r+2*38.2)*Math.cos(ang15*16)},
+    {"x0": cx + (r+2*29.7)*Math.sin(ang15*17), "y0": cy - (r+2*29.7)*Math.cos(ang15*17), "x1": cx + (r+2*35.2)*Math.sin(ang15*17), "y1": cy - (r+2*35.2)*Math.cos(ang15*17)},
+
+    {"x0": cx + (r+2*29.7)*Math.sin(ang15*17), "y0": cy - (r+2*29.7)*Math.cos(ang15*17), "x1": cx + (r+2*35.2)*Math.sin(ang15*17), "y1": cy - (r+2*35.2)*Math.cos(ang15*17)}, 
+    {"x0": cx + (r+2*32.7)*Math.sin(ang15*18), "y0": cy - (r+2*32.7)*Math.cos(ang15*18), "x1": cx + (r+2*38.2)*Math.sin(ang15*18), "y1": cy - (r+2*38.2)*Math.cos(ang15*18)},
+    {"x0": cx + (r+2*28.4)*Math.sin(ang15*19), "y0": cy - (r+2*28.4)*Math.cos(ang15*19), "x1": cx + (r+2*34)*Math.sin(ang15*19), "y1": cy - (r+2*34)*Math.cos(ang15*19)},
+
+    {"x0": cx + (r+2*28.4)*Math.sin(ang15*19), "y0": cy - (r+2*28.4)*Math.cos(ang15*19), "x1": cx + (r+2*34)*Math.sin(ang15*19), "y1": cy - (r+2*34)*Math.cos(ang15*19)}, 
+    {"x0": cx + (r+2*34.5)*Math.sin(ang15*20), "y0": cy - (r+2*34.5)*Math.cos(ang15*20), "x1": cx + (r+2*40)*Math.sin(ang15*20), "y1": cy - (r+2*40)*Math.cos(ang15*20)},
+    {"x0": cx + (r+2*31.5)*Math.sin(ang15*21), "y0": cy - (r+2*31.5)*Math.cos(ang15*21), "x1": cx + (r+2*37)*Math.sin(ang15*21), "y1": cy - (r+2*37)*Math.cos(ang15*21)},
+
+    {"x0": cx + (r+2*31.5)*Math.sin(ang15*21), "y0": cy - (r+2*31.5)*Math.cos(ang15*21), "x1": cx + (r+2*37)*Math.sin(ang15*21), "y1": cy - (r+2*37)*Math.cos(ang15*21)}, 
+    {"x0": cx + (r+2*33.7)*Math.sin(ang15*22), "y0": cy - (r+2*33.7)*Math.cos(ang15*22), "x1": cx + (r+2*40)*Math.sin(ang15*22), "y1": cy - (r+2*40)*Math.cos(ang15*22)},
+    {"x0": cx + (r+2*30.7)*Math.sin(ang15*23), "y0": cy - (r+2*30.7)*Math.cos(ang15*23), "x1": cx + (r+2*35)*Math.sin(ang15*23), "y1": cy - (r+2*35)*Math.cos(ang15*23)},
+
+    {"x0": cx + (r+2*30.7)*Math.sin(ang15*23), "y0": cy - (r+2*30.7)*Math.cos(ang15*23), "x1": cx + (r+2*35)*Math.sin(ang15*23), "y1": cy - (r+2*35)*Math.cos(ang15*23)}, 
+    {"x0": cx + (r+2*33.7)*Math.sin(ang15*24), "y0": cy - (r+2*33.7)*Math.cos(ang15*24), "x1": cx + (r+2*38)*Math.sin(ang15*24), "y1": cy - (r+2*38)*Math.cos(ang15*24)},
+    {"x0": cx + (r+2*29.1)*Math.sin(ang15*25), "y0": cy - (r+2*29.1)*Math.cos(ang15*25), "x1": cx + (r+2*33.9)*Math.sin(ang15*25), "y1": cy - (r+2*33.9)*Math.cos(ang15*25)},
+];
+
+//var linefunction = d3.svg.line()
+  //                      .x(function(d){ return d.x; })
+    //                    .y(function(d){ return d.y; })
+      //                  .interpolate("basis");
+
+var area = d3.svg.area()
+                        .x0(function(d){ return d.x0; })
+                        .x1(function(d){ return d.x1; })
+                        .y0(function(d){ return d.y0; })
+                        .y1(function(d){ return d.y1; })
+                        .interpolate("basis");
+
+d3.select("svg")
+    .append("path")
+    .attr("d", area(data1))
+    .attr("stroke", "none")
+    .attr("stroke-width", 1)
+    .attr("opacity", 0.5)
+    .attr("fill", "steelblue")
+
+d3.select("svg")
+    .append("path")
+    .attr("d", area(data2))
+    .attr("stroke", "none")
+    .attr("opacity", 0.4)
+    .attr("stroke-width", 1)
+    .attr("fill", "#660066");
+
+d3.select("svg")
+    .append("path")
+    .attr("d", area(data3))
+    .attr("stroke", "none")
+    .attr("stroke-width", 1)
+    .attr("opacity", 0.5)
+    .attr("fill", "steelblue");
+
+d3.select("svg")
+    .append("path")
+    .attr("d", area(data4))
+    .attr("stroke", "none")
+    .attr("stroke-width", 1)
+    .attr("opacity", 0.4)
+    .attr("fill", "#660066");
+
+d3.select("svg")
+    .append("path")
+    .attr("d", area(data5))
+    .attr("stroke", "none")
+    .attr("stroke-width", 1)
+    .attr("opacity", 0.5)
+    .attr("fill", "steelblue");     
+
+for (var i = 0; i < 12; i++){
+    d3.select("g")
+        .append("text")
+            .attr("text-anchor", "middle")
+            .text(i+1)
+            .attr("transform", "translate(" + 305*Math.sin(Math.PI/14+(ang15*2)*i) + "," + (-305*Math.cos(Math.PI/14+(ang15*2)*i)) + ")" )
+            .style("stroke", "black")
+            .style("font-size", 15);
+}
+
+d3.select("g")
+    .append("text")
+        .attr("text-anchor", "moddle")
+        .text("Male")
+        .attr("transform", "translate(0,-330)")
+        .style("stroke", "black")
+            .style("font-size", 15);
+
+d3.select("g")
+    .append("text")
+        .attr("text-anchor", "moddle")
+        .text("Local")
+        .attr("transform", "translate(0,-345)")
+        .style("stroke", "black")
+            .style("font-size", 15);
+
+d3.select("g")
+    .append("text")
+        .attr("text-anchor", "moddle")
+        .text("Local")
+        .attr("transform", "translate(0,-360)")
+        .style("stroke", "black")
+            .style("font-size", 15);
+
+d3.select("g")
+    .append("text")
+        .attr("text-anchor", "moddle")
+        .text("Direct reservation")
+        .attr("transform", "translate(-35,-375)")
+        .style("stroke", "black")
+            .style("font-size", 15);
+
+d3.select("g")
+    .append("text")
+        .attr("text-anchor", "moddle")
+        .text("Age 35~55")
+        .attr("transform", "translate(-20,-390)")
+        .style("stroke", "black")
+            .style("font-size", 15);
+
+
+</script>
