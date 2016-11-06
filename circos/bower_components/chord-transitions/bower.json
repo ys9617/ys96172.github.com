@@ -1,0 +1,24 @@
+{
+  "name": "chord-transitions",
+  "version": "0.1.7",
+  "homepage": "https://github.com/qianxinfeng/chord-transitions",
+  "authors": [
+    "shall <shall@delimited.io>",
+    "xinfeng_qian <xinfeng_qian@hansight.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "^1.5.7",
+    "d3": "^3.5.17"
+  },
+  "devDependencies": {
+    "bootstrap": "^3.3.6"
+  }
+}

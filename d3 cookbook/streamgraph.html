@@ -116,6 +116,7 @@
                             .data(stackedData)
                             .transition()
                             .attr("d", function(d){
+                               // console.log(d);
                                 return area(d);
                             });
                 }
@@ -207,7 +208,7 @@
 
             for ( var i = 0; i < numberOfSeries; i++ )
                 data.push(d3.range(numberOfDataPoint).map(function(i){
-                    return {x: i, y: randomData()};
+                    return {x: Math.sin(Math.PI*(2/7)*i), y: randomData()};
                 }));
 
             var chart = streamgraph()

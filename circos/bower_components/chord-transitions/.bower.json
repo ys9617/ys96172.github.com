@@ -1,0 +1,34 @@
+{
+  "name": "chord-transitions",
+  "version": "0.1.7",
+  "homepage": "https://github.com/qianxinfeng/chord-transitions",
+  "authors": [
+    "shall <shall@delimited.io>",
+    "xinfeng_qian <xinfeng_qian@hansight.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "^1.5.7",
+    "d3": "^3.5.17"
+  },
+  "devDependencies": {
+    "bootstrap": "^3.3.6"
+  },
+  "_release": "0.1.7",
+  "_resolution": {
+    "type": "version",
+    "tag": "0.1.7",
+    "commit": "69c108ae498b3399e5f609167eb9594d27721c22"
+  },
+  "_source": "https://github.com/qianxinfeng/chord-transitions.git",
+  "_target": "^0.1.7",
+  "_originalSource": "d3-chord",
+  "_direct": true
+}
