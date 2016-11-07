@@ -1,5 +1,5 @@
 // svg size
-var width = 1000, height = 1000;
+var width = 900, height = 900;
 
 // arc radius and color 
 var ir = 350, or = 370;
@@ -47,7 +47,9 @@ for(var i = 0; i < data1.length + data2.length; i++){
 
 
 // arc varialbles
-var group = d3.select("body").append("svg")
+var group = d3.select("body")
+                .select("div#circos")
+                .append("svg")
                 .attr("width", width)
                 .attr("height", height)
                     .append("g")
@@ -239,7 +241,7 @@ function ribbon_radius_controller(radius){
 }
 
 
-d3.select("body")
+d3.select("body div#controller-ribbon-radius")
     .append("input")
         .attr("type", "range")
         .attr("min", or/2)
@@ -296,7 +298,7 @@ function bezier_control_point_selector(dis){
 
 var control_point; 
 
-d3.select("body")
+d3.select("body div#controller-bezier-point")
     .append("input")
         .attr("type", "range")
         .attr("min", 0)

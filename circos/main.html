@@ -3,10 +3,38 @@
     <head>
         <meta charset="utf-8">
         <title>Circos - version 1.0</title>
-        <script src="bower_components/d3/d3.js"></script>      
+        <script src="bower_components/d3/d3.js"></script>
+        <link rel="stylesheet" href="control.css"/>      
     </head>
     <body>
+        
+
+        <table>
+            <tr>
+                <td>
+                    <div id="title">circos</div>
+                </td>
+                <td>
+                    <div id="contorl">contorl group</div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div id="circos"></div>
+                </td>
+                <td id="controller">
+                    <div id="controller-ribbon-radius">
+                        ribbon-radius
+                    </div>
+                    <div id="controller-bezier-point">
+                        control-point
+                    </div>
+                </td>
+            </tr>
+        </table>
+
         <script src="d_h_arc.js"></script>
         <script src="circos.js"></script>
+        
     </body>
 </html>
