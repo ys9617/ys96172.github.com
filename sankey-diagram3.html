@@ -4,6 +4,7 @@
         <meta charset="utf-8">
         <title>history sankey diagram</title>
         <script src="https://d3js.org/d3.v4.js"></script>
+        <script src="https://d3js.org/d3.v4.min.js"></script>
     </head>
     <style>
         .node rect {
@@ -15,6 +16,18 @@
             stroke: #000;
             stroke-opacity: .5;
             fill-opacity: .1;
+        }
+        div.tooltip {
+            position: absolute;
+            text-align: center;
+            width: 120px;
+            height: 80px;
+            padding: 2px;
+            font: 12px sans-serif;
+            background: lightsteelblue;
+            border: 2px;
+            border-radius: 8px;
+            stroke: #000;
         }
     </style>
     <body>
@@ -35,6 +48,7 @@
                         .x1(function(d){ return d.x1;})
                         .y0(function(d){ return d.y0;})
                         .y1(function(d){ return d.y1;});
+                var div;
 
 
                 _diagram.render = function(file){
@@ -60,29 +74,27 @@
 
                 _diagram.width = function(w){
                     _width = w;
-
                     return _diagram;
                 }
 
                 _diagram.height = function(h){
                     _height = h;
-
                     return _diagram;
                 }
 
                 _diagram.margin = function(m){
                     _margin = m;
-
                     return _diagram;
                 }
 
                 // functions
                 function main(file){
                     d3.json(file, function(data){
-
                             var _nodes = [], _links = [];
 
                             _sankey(data, _nodes, _links, _width, _height, _margin);
+
+                            //console.log(_nodes);
 
                             var _node = _svg.append('g').selectAll('.node')
                                             .data(_nodes)
@@ -96,6 +108,56 @@
                                                         })
                                                         .style('fill', 'steelblue')
                                                         .style('stroke', 'black')
+                                                        .on('mouseover', function(d, i){
+                                                            // node opacity
+                                                            d3.select(this)
+                                                              .style('fill-opacity', .9);
+
+                                                            // tooltip
+                                                            div = d3.select('body').append('div')
+                                                                        .attr('class', 'tooltip')
+                                                                        .style('opacity', 0);
+
+                                                            div.style('width', '120px')
+                                                                .style('height', '80px')
+                                                                .style('left', event.clientX+30 + 'px')
+                                                                .style('top', event.clientY +'px')
+                                                                .html('name : ' + d.name + "<br/>" +
+                                                                      'last_date : ' + d.last_date + "<br/>" + 
+                                                                      'log_num : ' + d.log_num + "<br/>" +
+                                                                      'action_num : ' + d.action_num)
+                                                                .transition()
+                                                                .style('opacity', .9);
+
+                                                            // drag functionality
+                                                            d3.select(this).call(d3.drag()
+                                                                .on('start', function(d){
+                                                                    d3.select('.node').append('rect')
+                                                                    .attr('class', 'drag')
+                                                                    .attr('width', 20)
+                                                                    .attr('height', _nodes[i].height)
+                                                                    .attr('transform', 'translate('
+                                                                    + _nodes[i].x + ',' + _nodes[i].y + ')')
+                                                                })
+                                                                .on('drag', function(d){
+                                                                 
+                                                                    d3.select('.drag')
+                                                                        .attr('transform', function(){
+                                                                            return 'translate(' + 
+                                                                            (event.clientX-10) + ',' + 
+                                                                            (event.clientY-d.height/2) + ')';
+                                                                        })
+                                                                })
+                                                                .on('end', function(d){
+                                                                    d3.select('.drag').remove();
+                                                                }))  
+                                                        })
+                                                        .on('mouseout', function(d, i){
+                                                            d3.select(this)
+                                                              .style('fill-opacity', .5);
+
+                                                            d3.select('.tooltip').remove();
+                                                        })
                                                         .transition();
 
                             _node.attr('transform', function(d){
@@ -104,6 +166,19 @@
                             .attr('height', function(d){
                                 return d.height;
                             })
+                            
+
+                            d3.select('.drag')
+                                .call(d3.drag()
+                                .on('start', function(d){
+                                    console.log(1)
+                                })
+                                .on('drag', function(d){
+                                    console.log(1)
+                                })
+                                .on('end', function(d){
+                                    console.log(1)
+                                }))
 
                             var _link = _svg.append('g').selectAll('.link')
                                             .data(_links)
@@ -117,6 +192,14 @@
                                                         ];
 
                                                         return _area(area_data);
+                                                    })
+                                                    .on('mouseover', function(d, i){
+                                                        d3.select(this)
+                                                          .style('fill-opacity', .3);
+                                                    })
+                                                    .on('mouseout', function(d, i){
+                                                        d3.select(this)
+                                                          .style('fill-opacity', .1);
                                                     })
                                                     .transition();
 
@@ -142,7 +225,6 @@
 
                     // links   
                     sankey_link(nodes, links, width, height);
-
                 }
 
                 function sankey_nodeXDS(data, nodes, depth, parent, width, height){
@@ -253,9 +335,6 @@
             function render(file){
                 diagram.render(file);
             }
-
-            
-
 
         </script>
     </body>
