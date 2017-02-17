@@ -1,0 +1,89 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Sankey</title>
+        <script src="https://d3js.org/d3.v4.js"></script>
+        <script src="history-sankey.js"></script>
+    </head>
+    <body>
+        <div id='sankey-diagram'></div>
+        <script>
+            var width = 800, height = 400, padding = 5;
+            var nodeWidth = 20;
+
+
+            var svg = d3.select('#sankey-diagram').append('svg')
+                        .attr('width', width)
+                        .attr('height', height);
+
+            var sankey = d3.sankey()
+                            .nodeWidth(nodeWidth)
+                            .nodePadding(padding)
+                            .sankeyHeight(height)
+                            .size([width, height]);
+            
+            d3.json('unit_his 1-1.json', function(data){
+                
+                sankey.data(data)
+                        .layout();
+
+                var node = svg.append('g').selectAll('.node')
+                                .data(sankey.nodes)
+                                .enter()
+                                    .append('g')
+                                        .attr('class', 'node')
+                                        .append('rect')
+                                            .attr('width', nodeWidth)
+                                            .attr('height', height)
+                                            .attr('transform', function(d){
+                                                return 'translate(' + d.x + ',' + d.y + ')';
+                                            })
+                                            .attr('height', function(d){
+                                                return d.height;
+                                            })
+                                            .style('fill', 'steelblue')
+                                            .style('stroke', 'black')
+                                            .style('fill-opacity', .5);
+
+                // mouse over and drag
+                node.on('mouseover', function(d, i){
+                    d3.select(this)
+                      .style('fill-opacity', .9);
+                })
+                .on('mouseout', function(d, i){
+                    d3.select(this)
+                      .style('fill-opacity', .5);
+                })
+
+                                            
+                                        
+
+            
+                
+
+                var link = svg.append('g').selectAll('link')
+                                .data(sankey.links)
+                                .enter()
+                                    .append('path')
+                                        .attr('class', 'link')
+                                        .attr('d', sankey.link())
+                                        .style('fill-opacity', .2)
+                                        .on('mouseover', function(d, i){
+                                            d3.select(this)
+                                              .style('fill-opacity', .3);
+                                        })
+                                        .on('mouseout', function(d, i){
+                                            d3.select(this)
+                                              .style('fill-opacity', .2);
+                                        })
+                                        
+                
+
+                sankey.console();
+            })
+
+
+
+        </script>
+    </body>
+</html>
