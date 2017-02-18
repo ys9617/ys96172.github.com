@@ -66,7 +66,6 @@ d3.sankey = function(){
             return area(area_data);
         }
 
-
         return link;
     };
 
@@ -77,9 +76,8 @@ d3.sankey = function(){
     // ------------------ functions
 
     function computeSankey(data, nodes, links, height, margin){
-
         //nodes
-        computeNodeXDS(data, nodes, 0, null, height);
+        computeNodeXDS(data, nodes, -1, null, height);
         computeNodeYH(nodes, height, margin);
 
         //links
@@ -93,17 +91,20 @@ d3.sankey = function(){
         if(parent == null) source = -1;
         else source = parent;
 
-        nodes.push({
-            'id': data.id,
-            'total_action_num': data.total_action_num,
-            'action_num': data.action_num,
-            'last_date': data.last_date,
-            'ver': data.ver,
-            'anno_num': data.anno_num,
-            'x': x,
-            'depth': depth,
-            'source': source
-        });
+        if(depth != -1){
+            nodes.push({
+                'id': data.id,
+                'total_action_num': data.total_action_num,
+                'action_num': data.action_num,
+                'last_date': data.last_date,
+                'ver': data.ver,
+                'anno_num': data.anno_num,
+                'action_list': data.action_list,
+                'x': x,
+                'depth': depth,
+                'source': source
+            });
+        }
 
         if(data.children){
             var tmp = nodes.length-1;
@@ -173,23 +174,46 @@ d3.sankey = function(){
 
             if(source != -1){
 
+                console.log(nodes[source].action_list.length)
+
                 var source_y1 = nodes[source].height * (nodes[target].action_num/depthSum[nodes[i].depth]);
 
                 if(source_sum[source] == undefined)
                     source_sum[source] = 0;
 
+                // --
+
+                var actionList = nodes[i].action_list;
+
+                for(var j = 0; j < actionList.length; j++){
                     links.push({
                     'source':{
-                    'x0': nodes[source].x+20, 
-                    'y0': nodes[source].y + source_sum[source],
-                    'x1': nodes[source].x+20, 
-                    'y1': nodes[source].y + source_sum[source] + source_y1
+                        'x0': nodes[source].x+20, 
+                        'y0': nodes[source].y + source_sum[source],
+                        'x1': nodes[source].x+20, 
+                        'y1': nodes[source].y + source_sum[source] + source_y1*(j+1)/(actionList.length)
                     },
                     'target':{
-                    'x0': nodes[target].x, 'y0': nodes[target].y,
-                    'x1': nodes[target].x, 'y1': nodes[target].y + nodes[target].height
+                        'x0': nodes[target].x, 'y0': nodes[target].y,
+                        'x1': nodes[target].x, 'y1': nodes[target].y + nodes[target].height*(j+1)/(actionList.length)
                     }
-                })
+                    })
+                }
+
+                /*links.push({
+                    'source':{
+                        'x0': nodes[source].x+20, 
+                        'y0': nodes[source].y + source_sum[source],
+                        'x1': nodes[source].x+20, 
+                        'y1': nodes[source].y + source_sum[source] + source_y1
+                    },
+                    'target':{
+                        'x0': nodes[target].x, 'y0': nodes[target].y,
+                        'x1': nodes[target].x, 'y1': nodes[target].y + nodes[target].height
+                    }
+                })*/
+
+                // --
 
                 source_sum[source] += source_y1;
             }
