@@ -4,6 +4,26 @@
         <title>Sankey</title>
         <script src="https://d3js.org/d3.v4.js"></script>
         <script src="history-sankey.js"></script>
+    <!--     <link rel="stylesheet" href="unit-history.css"/>   -->
+            <style>
+            .stop-left {
+                stop-color: #3f51b5;  /* Indigo */
+            }
+
+            .stop-right {
+                stop-color: #009688;  /* Teal */
+            }
+
+            .filled {
+                fill: url(#mainGradient);
+            }
+
+            .outlined {
+                fill:   none;
+                stroke: url(#mainGradient);
+                stroke-width: 4;
+            }
+        </style>
     </head>
     <body>
         <div id='sankey-diagram'></div>
@@ -11,18 +31,20 @@
             var width = 800, height = 400, padding = 5;
             var nodeWidth = 20;
 
-
             var svg = d3.select('#sankey-diagram').append('svg')
-                        .attr('width', width)
-                        .attr('height', height);
+                        .attr('width', width+100)
+                        .attr('height', height+100);
 
             var sankey = d3.sankey()
                             .nodeWidth(nodeWidth)
                             .nodePadding(padding)
                             .sankeyHeight(height)
                             .size([width, height]);
+
+
+            var c20 = d3.scaleOrdinal(d3.schemeCategory20);
             
-            d3.json('unit_his 1-1.json', function(data){
+            d3.json('unit_his 1-2.json', function(data){
                 
                 sankey.data(data)
                         .layout();
@@ -43,44 +65,68 @@
                                             })
                                             .style('fill', 'steelblue')
                                             .style('stroke', 'black')
-                                            .style('fill-opacity', .5);
+                                            .style('fill-opacity', .9);
+                                            
 
                 // mouse over and drag
                 node.on('mouseover', function(d, i){
                     d3.select(this)
-                      .style('fill-opacity', .9);
+                      .style('fill-opacity', .5);
                 })
                 .on('mouseout', function(d, i){
                     d3.select(this)
-                      .style('fill-opacity', .5);
+                      .style('fill-opacity', .9);
                 })
                 
                                         
                 // ---------------links
-            
-                
-
                 var link = svg.append('g').selectAll('link')
                                 .data(sankey.links)
                                 .enter()
                                     .append('path')
-                                        .attr('class', 'link')
+                                        .attr('class', function(d){
+                                            return 'link '+ d.action;
+                                        })
                                         .attr('d', sankey.link())
-                                        .style('fill-opacity', .2)
+                                        .style('fill-opacity', .6)
                                         .on('mouseover', function(d, i){
                                             d3.select(this)
                                               .style('fill-opacity', .3);
                                         })
                                         .on('mouseout', function(d, i){
                                             d3.select(this)
-                                              .style('fill-opacity', .2);
+                                              .style('fill-opacity', .6);
                                         })
+                                        .style('fill', function(d,i){
+                                            return c20(d.action);
+                                        })
+                                        .style('fill-opacity', .6)
+
+
+
+                                     //   .append('defs')
+                                       // .append('linearGradient')
+
+                /*link.append('stop')
+                    .attr('class', 'stop-left')
+                    .attr('offset', '0');
+                
+                link.append('stop')
+                    .attr('class', 'stop-right')
+                    .attr('offset', '1');*/
+
+                                   //         .append('stop')
+                                     //           .attr('class', 'stop-left')
+                                       //     .append('stop')
+                                         //       .attr('class', 'stop-right')
+                                                
+                       
+
                                         
                 
 
                 sankey.console();
             })
-
 
 
         </script>

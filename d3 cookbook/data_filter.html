@@ -8,7 +8,7 @@
     </head>
     <body>
         <script>
-            var data = [
+            /*var data = [
                 {expense: 10, category: "Retail"},
                 {expense: 15, category: "Gas"},
                 {expense: 30, category: "Retail"},
@@ -20,7 +20,14 @@
                 {expense: 20, category: "Retail"},
                 {expense: 10, category: "Dining"},
                 {expense: 8, category: "Gas"}
-            ];
+            ];*/
+
+            var data = [
+                {expense: 30, category: 'Graphics/Visualization'},
+                {expense: 30, category: 'Programming'},
+                {expense: 30, category: 'Theory'},
+                {expense: 30, category: 'System'}
+            ]
 
             function render(data, category) {
                 d3.select("body").selectAll("div.h-bar")
@@ -40,6 +47,7 @@
                     .style("width", function(d) {
                         return (d.expense * 5) + "px";
                     })
+                    .style('height', '30px')
                     .select("span")
                         .text(function(d) {
                             return d.category;

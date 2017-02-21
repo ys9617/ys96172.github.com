@@ -1,0 +1,809 @@
+{
+   "detail": "Action History.",
+   "success": true,
+   "output": {
+      "anno_path": null,
+      "id": "day3-1",
+      "children": [
+         {
+            "anno_path": "static/member/test/chung/day3/1/U-3578/0/annotation.json",
+            "id": "U-3578",
+            "children": [
+               {
+                  "anno_path": "",
+                  "id": "U-8556",
+                  "total_apply_num": 1,
+                  "apply_num": 1,
+                  "last_date": "2017-02-20 11:30:33",
+                  "ver": 0,
+                  "total_anno_num": 0,
+                  "total_action_num": 0,
+                  "action_list": [],
+                  "action_num": 0,
+                  "name": "U-8556",
+                  "parent": "U-3578-0",
+                  "anno_num": 0,
+                  "save_ver": 0
+               },
+               {
+                  "anno_path": "",
+                  "id": "U-3578",
+                  "children": [
+                     {
+                        "anno_path": "",
+                        "id": "U-3578",
+                        "children": [
+                           {
+                              "anno_path": "",
+                              "id": "U-3578",
+                              "total_apply_num": 1,
+                              "apply_num": 1,
+                              "last_date": "2017-02-20 11:31:49",
+                              "ver": 3,
+                              "total_anno_num": 0,
+                              "total_action_num": 9,
+                              "action_list": [
+                                 {
+                                    "parameter": {
+                                       "block_ver": 1,
+                                       "block_name": "U-8556",
+                                       "block_iden": "U-3578",
+                                       "save_ver": null
+                                    },
+                                    "action": "Save-Unit",
+                                    "date": "2017-02-20 11:30:41"
+                                 },
+                                 {
+                                    "parameter": {
+                                       "block_ver": 1,
+                                       "block_name": "U-8556",
+                                       "block_iden": "U-3578",
+                                       "save_ver": null
+                                    },
+                                    "action": "Select-Unit",
+                                    "date": "2017-02-20 11:31:09"
+                                 },
+                                 {
+                                    "parameter": {
+                                       "block_ver": 1,
+                                       "block_name": "U-8556",
+                                       "block_iden": "U-3578",
+                                       "save_ver": null
+                                    },
+                                    "action": "Select-Unit",
+                                    "date": "2017-02-20 11:31:10"
+                                 },
+                                 {
+                                    "parameter": {
+                                       "block_ver": 1,
+                                       "block_name": "U-8556",
+                                       "block_iden": "U-3578",
+                                       "save_ver": null
+                                    },
+                                    "action": "Select-Unit",
+                                    "date": "2017-02-20 11:31:12"
+                                 },
+                                 {
+                                    "parameter": {
+                                       "block_ver": 1,
+                                       "block_name": "U-8556",
+                                       "block_iden": "U-3578",
+                                       "save_ver": null
+                                    },
+                                    "action": "Select-Unit",
+                                    "date": "2017-02-20 11:31:12"
+                                 },
+                                 {
+                                    "parameter": {
+                                       "block_ver": 1,
+                                       "block_name": "U-8556",
+                                       "block_iden": "U-3578",
+                                       "save_ver": null
+                                    },
+                                    "action": "Select-Unit",
+                                    "date": "2017-02-20 11:31:14"
+                                 },
+                                 {
+                                    "parameter": {
+                                       "block_ver": 1,
+                                       "data_name": "loadTest.txt (1.38 KB)",
+                                       "block_name": null,
+                                       "block_iden": "U-3578",
+                                       "save_ver": null
+                                    },
+                                    "action": "Change-Data",
+                                    "date": "2017-02-20 11:31:17"
+                                 },
+                                 {
+                                    "parameter": {
+                                       "block_ver": 1,
+                                       "clusterParam": null,
+                                       "block_name": null,
+                                       "block_iden": "U-3578",
+                                       "save_ver": null
+                                    },
+                                    "action": "Change-Cluster-Type",
+                                    "date": "2017-02-20 11:31:21"
+                                 },
+                                 {
+                                    "parameter": {
+                                       "block_ver": 3,
+                                       "block_name": "U-8556",
+                                       "block_iden": "U-3578",
+                                       "save_ver": null
+                                    },
+                                    "action": "Save-Unit",
+                                    "date": "2017-02-20 11:31:49"
+                                 }
+                              ],
+                              "action_num": 9,
+                              "name": "U-8556",
+                              "parent": "U-3578-2",
+                              "anno_num": 0,
+                              "save_ver": 3
+                           }
+                        ],
+                        "total_apply_num": 2,
+                        "apply_num": 1,
+                        "last_date": "2017-02-20 11:31:23",
+                        "ver": 2,
+                        "total_anno_num": 1,
+                        "total_action_num": 13,
+                        "action_list": [
+                           {
+                              "parameter": {
+                                 "block_ver": 0,
+                                 "block_name": null,
+                                 "block_iden": "U-3578",
+                                 "save_ver": null
+                              },
+                              "action": "Save-Unit",
+                              "date": "2017-02-20 08:13:33"
+                           },
+                           {
+                              "parameter": {
+                                 "block_ver": 0,
+                                 "block_name": "U-3578",
+                                 "block_iden": "U-3578",
+                                 "save_ver": null
+                              },
+                              "action": "Select-Unit",
+                              "date": "2017-02-20 08:13:33"
+                           },
+                           {
+                              "parameter": {
+                                 "block_ver": 0,
+                                 "block_name": "U-3578",
+                                 "block_iden": "U-3578",
+                                 "save_ver": null
+                              },
+                              "action": "Select-Unit",
+                              "date": "2017-02-20 11:30:32"
+                           },
+                           {
+                              "parameter": {
+                                 "block_ver": 2,
+                                 "block_name": "U-8556",
+                                 "block_iden": "U-3578",
+                                 "save_ver": null
+                              },
+                              "action": "Save-Unit",
+                              "date": "2017-02-20 11:31:23"
+                           }
+                        ],
+                        "action_num": 4,
+                        "name": "U-8556",
+                        "parent": "U-3578-1",
+                        "anno_num": 1,
+                        "save_ver": 2
+                     }
+                  ],
+                  "total_apply_num": 3,
+                  "apply_num": 1,
+                  "last_date": "2017-02-20 11:30:41",
+                  "ver": 1,
+                  "total_anno_num": 1,
+                  "total_action_num": 14,
+                  "action_list": [
+                     {
+                        "parameter": {
+                           "block_ver": 1,
+                           "block_name": "U-8556",
+                           "block_iden": "U-3578",
+                           "save_ver": null
+                        },
+                        "action": "Save-Unit",
+                        "date": "2017-02-20 11:30:41"
+                     }
+                  ],
+                  "action_num": 1,
+                  "name": "U-8556",
+                  "parent": "U-3578-0",
+                  "anno_num": 0,
+                  "save_ver": 1
+               }
+            ],
+            "total_apply_num": 5,
+            "apply_num": 1,
+            "last_date": "2017-02-20 08:13:33",
+            "ver": 0,
+            "total_anno_num": 1,
+            "total_action_num": 14,
+            "action_list": [],
+            "action_num": 0,
+            "name": "U-3578",
+            "parent": "day3-1",
+            "anno_num": 0,
+            "save_ver": 0
+         },
+         {
+            "anno_path": "static/member/test/chung/day3/1/U-2778/0/annotation.json",
+            "id": "U-2778",
+            "total_apply_num": 1,
+            "apply_num": 1,
+            "last_date": "2017-02-20 08:13:33",
+            "ver": 0,
+            "total_anno_num": 0,
+            "total_action_num": 0,
+            "action_list": [],
+            "action_num": 0,
+            "name": "U-2778",
+            "parent": "day3-1",
+            "anno_num": 0,
+            "save_ver": 0
+         },
+         {
+            "anno_path": "static/member/test/chung/day3/1/U-2778/2/annotation.json",
+            "id": "U-2778",
+            "children": [
+               {
+                  "anno_path": "",
+                  "id": "U-6733",
+                  "children": [
+                     {
+                        "anno_path": "",
+                        "id": "U-6733",
+                        "total_apply_num": 1,
+                        "apply_num": 1,
+                        "last_date": "2017-02-20 11:31:07",
+                        "ver": 1,
+                        "total_anno_num": 1,
+                        "total_action_num": 1,
+                        "action_list": [
+                           {
+                              "parameter": {
+                                 "block_ver": 1,
+                                 "block_name": "U-6733",
+                                 "block_iden": "U-6733",
+                                 "save_ver": null
+                              },
+                              "action": "Save-Unit",
+                              "date": "2017-02-20 11:31:07"
+                           }
+                        ],
+                        "action_num": 1,
+                        "name": "U-6733",
+                        "parent": "U-6733-0",
+                        "anno_num": 1,
+                        "save_ver": 1
+                     }
+                  ],
+                  "total_apply_num": 2,
+                  "apply_num": 1,
+                  "last_date": "2017-02-20 11:30:51",
+                  "ver": 0,
+                  "total_anno_num": 1,
+                  "total_action_num": 1,
+                  "action_list": [],
+                  "action_num": 0,
+                  "name": "U-6733",
+                  "parent": "U-2778-2",
+                  "anno_num": 0,
+                  "save_ver": 0
+               },
+               {
+                  "anno_path": "",
+                  "id": "U-2778",
+                  "total_apply_num": 1,
+                  "apply_num": 1,
+                  "last_date": "2017-02-20 11:30:55",
+                  "ver": 3,
+                  "total_anno_num": 0,
+                  "total_action_num": 1,
+                  "action_list": [
+                     {
+                        "parameter": {
+                           "block_ver": 3,
+                           "block_name": "U-6733",
+                           "block_iden": "U-2778",
+                           "save_ver": null
+                        },
+                        "action": "Save-Unit",
+                        "date": "2017-02-20 11:30:55"
+                     }
+                  ],
+                  "action_num": 1,
+                  "name": "U-6733",
+                  "parent": "U-2778-2",
+                  "anno_num": 0,
+                  "save_ver": 1
+               }
+            ],
+            "total_apply_num": 5,
+            "apply_num": 2,
+            "last_date": "2017-02-20 08:13:33",
+            "ver": 2,
+            "total_anno_num": 1,
+            "total_action_num": 16,
+            "action_list": [
+               {
+                  "parameter": {
+                     "block_ver": 0,
+                     "block_name": null,
+                     "block_iden": "U-2778",
+                     "save_ver": null
+                  },
+                  "action": "Select-Unit",
+                  "date": "2017-02-20 08:13:33"
+               },
+               {
+                  "parameter": {
+                     "block_ver": 0,
+                     "block_name": null,
+                     "block_iden": "U-2778",
+                     "save_ver": null
+                  },
+                  "action": "Create-Unit",
+                  "date": "2017-02-20 08:13:33"
+               },
+               {
+                  "parameter": {
+                     "project_name": "chung",
+                     "username": "test",
+                     "session_ver": 1,
+                     "session_name": "day3"
+                  },
+                  "action": "Locate-Unit",
+                  "date": "2017-02-20 08:13:33"
+               },
+               {
+                  "parameter": {
+                     "block_ver": 0,
+                     "block_name": null,
+                     "block_iden": "U-2778",
+                     "save_ver": null
+                  },
+                  "action": "Select-Unit",
+                  "date": "2017-02-20 08:13:33"
+               },
+               {
+                  "parameter": {
+                     "block_ver": 0,
+                     "clusterParam": null,
+                     "block_name": null,
+                     "block_iden": "U-2778",
+                     "save_ver": null
+                  },
+                  "action": "Change-Cluster-Type",
+                  "date": "2017-02-20 08:13:33"
+               },
+               {
+                  "parameter": {
+                     "block_ver": 0,
+                     "data_name": "loadTest.txt (1.38 KB)",
+                     "block_name": null,
+                     "block_iden": "U-2778",
+                     "save_ver": null
+                  },
+                  "action": "Change-Data",
+                  "date": "2017-02-20 08:13:33"
+               },
+               {
+                  "parameter": {
+                     "block_ver": 0,
+                     "block_name": null,
+                     "block_iden": "U-2778",
+                     "save_ver": null
+                  },
+                  "action": "Save-Unit",
+                  "date": "2017-02-20 08:13:33"
+               },
+               {
+                  "parameter": {
+                     "block_ver": 0,
+                     "block_name": null,
+                     "block_iden": "U-2778",
+                     "save_ver": null
+                  },
+                  "action": "Select-Unit",
+                  "date": "2017-02-20 08:13:33"
+               },
+               {
+                  "parameter": {},
+                  "action": "Apply-Unit",
+                  "date": "2017-02-20 08:13:33"
+               },
+               {
+                  "parameter": {
+                     "block_ver": 1,
+                     "clusterParam": null,
+                     "block_name": null,
+                     "block_iden": "U-2778",
+                     "save_ver": null
+                  },
+                  "action": "Change-Cluster-Type",
+                  "date": "2017-02-20 08:13:33"
+               },
+               {
+                  "parameter": {},
+                  "action": "Apply-Unit",
+                  "date": "2017-02-20 08:13:33"
+               },
+               {
+                  "parameter": {
+                     "block_ver": 2,
+                     "block_name": "U-2778",
+                     "block_iden": "U-2778",
+                     "save_ver": null
+                  },
+                  "action": "Select-Unit",
+                  "date": "2017-02-20 11:30:49"
+               },
+               {
+                  "parameter": {
+                     "project_name": "chung",
+                     "username": "test",
+                     "session_ver": 1,
+                     "session_name": "day3"
+                  },
+                  "action": "Locate-Unit",
+                  "date": "2017-02-20 11:30:50"
+               },
+               {
+                  "parameter": {
+                     "block_ver": 2,
+                     "block_name": "U-2778",
+                     "block_iden": "U-2778",
+                     "save_ver": null
+                  },
+                  "action": "Select-Unit",
+                  "date": "2017-02-20 11:30:50"
+               }
+            ],
+            "action_num": 14,
+            "name": "U-2778",
+            "parent": "day3-1",
+            "anno_num": 0,
+            "save_ver": 0
+         },
+         {
+            "anno_path": "static/member/test/chung/day3/1/U-9841/0/annotation.json",
+            "id": "U-9841",
+            "children": [
+               {
+                  "anno_path": "",
+                  "id": "U-9841",
+                  "total_apply_num": 2,
+                  "apply_num": 2,
+                  "last_date": "2017-02-20 11:32:09",
+                  "ver": 2,
+                  "total_anno_num": 0,
+                  "total_action_num": 5,
+                  "action_list": [
+                     {
+                        "parameter": {
+                           "block_ver": 0,
+                           "block_name": "U-9841",
+                           "block_iden": "U-9841",
+                           "save_ver": null
+                        },
+                        "action": "Save-Unit",
+                        "date": "2017-02-20 11:31:58"
+                     },
+                     {
+                        "parameter": {
+                           "block_ver": 0,
+                           "clusterParam": null,
+                           "block_name": null,
+                           "block_iden": "U-9841",
+                           "save_ver": null
+                        },
+                        "action": "Change-Cluster-Type",
+                        "date": "2017-02-20 11:32:02"
+                     },
+                     {
+                        "parameter": {},
+                        "action": "Apply-Unit",
+                        "date": "2017-02-20 11:32:03"
+                     },
+                     {
+                        "parameter": {
+                           "block_ver": 1,
+                           "clusterParam": null,
+                           "block_name": null,
+                           "block_iden": "U-9841",
+                           "save_ver": null
+                        },
+                        "action": "Change-Cluster-Type",
+                        "date": "2017-02-20 11:32:08"
+                     },
+                     {
+                        "parameter": {
+                           "block_ver": 2,
+                           "block_name": "U-9841",
+                           "block_iden": "U-9841",
+                           "save_ver": null
+                        },
+                        "action": "Save-Unit",
+                        "date": "2017-02-20 11:32:09"
+                     }
+                  ],
+                  "action_num": 5,
+                  "name": "U-9841",
+                  "parent": "U-9841-0",
+                  "anno_num": 0,
+                  "save_ver": 1
+               }
+            ],
+            "total_apply_num": 3,
+            "apply_num": 1,
+            "last_date": "2017-02-20 11:31:58",
+            "ver": 0,
+            "total_anno_num": 0,
+            "total_action_num": 9,
+            "action_list": [
+               {
+                  "parameter": {
+                     "block_ver": -1,
+                     "block_name": "U-9841",
+                     "block_iden": "U-9841",
+                     "save_ver": null
+                  },
+                  "action": "Select-Unit",
+                  "date": "2017-02-20 11:31:54"
+               },
+               {
+                  "parameter": {
+                     "block_ver": -1,
+                     "block_name": "U-9841",
+                     "block_iden": "U-9841",
+                     "save_ver": null
+                  },
+                  "action": "Create-Unit",
+                  "date": "2017-02-20 11:31:54"
+               },
+               {
+                  "parameter": {
+                     "block_ver": -1,
+                     "clusterParam": null,
+                     "block_name": null,
+                     "block_iden": "U-9841",
+                     "save_ver": null
+                  },
+                  "action": "Change-Cluster-Type",
+                  "date": "2017-02-20 11:31:55"
+               },
+               {
+                  "parameter": {
+                     "block_ver": -1,
+                     "data_name": "loadTest.txt (1.38 KB)",
+                     "block_name": null,
+                     "block_iden": "U-9841",
+                     "save_ver": null
+                  },
+                  "action": "Change-Data",
+                  "date": "2017-02-20 11:31:58"
+               }
+            ],
+            "action_num": 4,
+            "name": "U-9841",
+            "parent": "day3-1",
+            "anno_num": 0,
+            "save_ver": 0
+         },
+         {
+            "anno_path": "static/member/test/chung/day3/1/U-8253/0/annotation.json",
+            "id": "U-8253",
+            "children": [
+               {
+                  "anno_path": "",
+                  "id": "U-3750",
+                  "children": [
+                     {
+                        "anno_path": "",
+                        "id": "U-3750",
+                        "children": [
+                           {
+                              "anno_path": "",
+                              "id": "U-3750",
+                              "total_apply_num": 1,
+                              "apply_num": 1,
+                              "last_date": "2017-02-20 11:32:25",
+                              "ver": 2,
+                              "total_anno_num": 0,
+                              "total_action_num": 1,
+                              "action_list": [
+                                 {
+                                    "parameter": {
+                                       "block_ver": 2,
+                                       "block_name": "U-3750",
+                                       "block_iden": "U-3750",
+                                       "save_ver": null
+                                    },
+                                    "action": "Save-Unit",
+                                    "date": "2017-02-20 11:32:25"
+                                 }
+                              ],
+                              "action_num": 1,
+                              "name": "U-3750",
+                              "parent": "U-3750-1",
+                              "anno_num": 0,
+                              "save_ver": 2
+                           }
+                        ],
+                        "total_apply_num": 2,
+                        "apply_num": 1,
+                        "last_date": "2017-02-20 11:32:22",
+                        "ver": 1,
+                        "total_anno_num": 0,
+                        "total_action_num": 2,
+                        "action_list": [
+                           {
+                              "parameter": {
+                                 "block_ver": 1,
+                                 "block_name": "U-3750",
+                                 "block_iden": "U-3750",
+                                 "save_ver": null
+                              },
+                              "action": "Save-Unit",
+                              "date": "2017-02-20 11:32:22"
+                           }
+                        ],
+                        "action_num": 1,
+                        "name": "U-3750",
+                        "parent": "U-3750-0",
+                        "anno_num": 0,
+                        "save_ver": 1
+                     }
+                  ],
+                  "total_apply_num": 3,
+                  "apply_num": 1,
+                  "last_date": "2017-02-20 11:32:18",
+                  "ver": 0,
+                  "total_anno_num": 0,
+                  "total_action_num": 2,
+                  "action_list": [],
+                  "action_num": 0,
+                  "name": "U-3750",
+                  "parent": "U-8253-0",
+                  "anno_num": 0,
+                  "save_ver": 0
+               },
+               {
+                  "anno_path": "",
+                  "id": "U-8253",
+                  "children": [
+                     {
+                        "anno_path": "",
+                        "id": "U-8253",
+                        "total_apply_num": 1,
+                        "apply_num": 1,
+                        "last_date": "2017-02-20 11:32:34",
+                        "ver": 2,
+                        "total_anno_num": 0,
+                        "total_action_num": 1,
+                        "action_list": [
+                           {
+                              "parameter": {
+                                 "block_ver": 2,
+                                 "block_name": "U-8253",
+                                 "block_iden": "U-8253",
+                                 "save_ver": null
+                              },
+                              "action": "Save-Unit",
+                              "date": "2017-02-20 11:32:35"
+                           }
+                        ],
+                        "action_num": 1,
+                        "name": "U-8253",
+                        "parent": "U-8253-1",
+                        "anno_num": 0,
+                        "save_ver": 2
+                     }
+                  ],
+                  "total_apply_num": 2,
+                  "apply_num": 1,
+                  "last_date": "2017-02-20 11:32:32",
+                  "ver": 1,
+                  "total_anno_num": 0,
+                  "total_action_num": 2,
+                  "action_list": [
+                     {
+                        "parameter": {
+                           "block_ver": 1,
+                           "block_name": "U-8253",
+                           "block_iden": "U-8253",
+                           "save_ver": null
+                        },
+                        "action": "Save-Unit",
+                        "date": "2017-02-20 11:32:32"
+                     }
+                  ],
+                  "action_num": 1,
+                  "name": "U-8253",
+                  "parent": "U-8253-0",
+                  "anno_num": 0,
+                  "save_ver": 1
+               }
+            ],
+            "total_apply_num": 6,
+            "apply_num": 1,
+            "last_date": "2017-02-20 11:32:17",
+            "ver": 0,
+            "total_anno_num": 0,
+            "total_action_num": 8,
+            "action_list": [
+               {
+                  "parameter": {
+                     "block_ver": -1,
+                     "block_name": "U-8253",
+                     "block_iden": "U-8253",
+                     "save_ver": null
+                  },
+                  "action": "Select-Unit",
+                  "date": "2017-02-20 11:32:13"
+               },
+               {
+                  "parameter": {
+                     "block_ver": -1,
+                     "block_name": "U-8253",
+                     "block_iden": "U-8253",
+                     "save_ver": null
+                  },
+                  "action": "Create-Unit",
+                  "date": "2017-02-20 11:32:13"
+               },
+               {
+                  "parameter": {
+                     "block_ver": -1,
+                     "clusterParam": null,
+                     "block_name": null,
+                     "block_iden": "U-8253",
+                     "save_ver": null
+                  },
+                  "action": "Change-Cluster-Type",
+                  "date": "2017-02-20 11:32:15"
+               },
+               {
+                  "parameter": {
+                     "block_ver": -1,
+                     "data_name": "loadTest.txt (1.38 KB)",
+                     "block_name": null,
+                     "block_iden": "U-8253",
+                     "save_ver": null
+                  },
+                  "action": "Change-Data",
+                  "date": "2017-02-20 11:32:17"
+               }
+            ],
+            "action_num": 4,
+            "name": "U-8253",
+            "parent": "day3-1",
+            "anno_num": 0,
+            "save_ver": 0
+         }
+      ],
+      "total_apply_num": 20,
+      "apply_num": 0,
+      "last_date": null,
+      "ver": "1",
+      "total_anno_num": 5,
+      "total_action_num": 47,
+      "action_list": null,
+      "action_num": 0,
+      "name": "day3",
+      "parent": null,
+      "anno_num": 0,
+      "save_ver": null
+   }
+}

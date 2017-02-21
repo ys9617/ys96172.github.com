@@ -175,7 +175,7 @@
             }
 
             function randomData() {
-                return Math.random() * 9;
+                return Math.random() * 4.3;
             }
 
             function update() {
@@ -194,7 +194,7 @@
 
             var chart = barChart()
                         .x(d3.scale.linear().domain([-1, 32]))
-                        .y(d3.scale.linear().domain([0, 10]));
+                        .y(d3.scale.linear().domain([0, 4.3]));
 
             chart.setSeries(data);
             chart.render();
