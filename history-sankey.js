@@ -77,11 +77,11 @@ d3.sankey = function(){
 
     function computeSankey(data, nodes, links, height, margin){
         //nodes
-        computeNodeXDS(data, nodes, -1, null, height);
+        computeNodeXDS(data, nodes, 0, null, height);
         computeNodeYH(nodes, height, margin);
 
         //links
-        computeLink(nodes, links, height);
+        computeLink(nodes, links, nodeWidth, height);
     }
 
     function computeNodeXDS(data, nodes, depth, parent, height){
@@ -91,7 +91,7 @@ d3.sankey = function(){
         if(parent == null) source = -1;
         else source = parent;
 
-        if(depth != -1){
+     //   if(depth != -1){
             nodes.push({
                 'id': data.id,
                 'total_action_num': data.total_action_num,
@@ -104,7 +104,7 @@ d3.sankey = function(){
                 'depth': depth,
                 'source': source
             });
-        }
+     //   }
 
         if(data.children){
             var tmp = nodes.length-1;
@@ -133,8 +133,12 @@ d3.sankey = function(){
         
         nodes.forEach(function(node){
             var node_height;
-            if(node.action_num == 0)
-                node_height = height / heightest;
+            if(node.action_num == 0){
+                if(node.depth == 0)
+                    node_height = height;
+                else 
+                    node_height = height / heightest;
+            }
             else 
                 node_height = height * node.action_num / heightest;
 
@@ -152,72 +156,58 @@ d3.sankey = function(){
 
         // centerization
         nodes.forEach(function(node){
-            node['y'] += (200 - height * depthSum[node.depth]/(2*heightest));
+            if(node.depth == 0)
+                node['y'] = 0;
+            else 
+                node['y'] += (200 - height * depthSum[node.depth]/(2*heightest));
         });
     }
 
-    function computeLink(nodes, links, height){
+    function computeLink(nodes, links, nodeWidth, height){
 
-        var depthSum = [];
+        var sourceDepthSum = [];
         var source_sum = [];
 
         nodes.forEach(function(node){
-            if(depthSum[node.depth] == undefined)
-                depthSum[node.depth] = node.action_num;
+            if(sourceDepthSum[node.source] == undefined)
+                sourceDepthSum[node.source] = node.action_num;
             else
-                depthSum[node.depth] += node.action_num;
+                sourceDepthSum[node.source] += node.action_num;
         });
 
-        for(var i = 0; i < nodes.length; i++){
-            var source = nodes[i].source;
-            var target = i;
-
+        nodes.forEach(function(node){
+            var source = node.source;
+            
             if(source != -1){
-
-                console.log(nodes[source].action_list.length)
-
-                var source_y1 = nodes[source].height * (nodes[target].action_num/depthSum[nodes[i].depth]);
+                var source_y1 = nodes[source].height * node.action_num / sourceDepthSum[node.source];
 
                 if(source_sum[source] == undefined)
                     source_sum[source] = 0;
 
-                // --
+                var actionList = node.action_list;
 
-                var actionList = nodes[i].action_list;
-
-                for(var j = 0; j < actionList.length; j++){
+                var j = 0;
+                actionList.forEach(function(action){
                     links.push({
-                    'source':{
-                        'x0': nodes[source].x+20, 
-                        'y0': nodes[source].y + source_sum[source],
-                        'x1': nodes[source].x+20, 
-                        'y1': nodes[source].y + source_sum[source] + source_y1*(j+1)/(actionList.length)
-                    },
-                    'target':{
-                        'x0': nodes[target].x, 'y0': nodes[target].y,
-                        'x1': nodes[target].x, 'y1': nodes[target].y + nodes[target].height*(j+1)/(actionList.length)
-                    }
+                        'action': action.action,
+                        'source':{
+                            'x0': nodes[source].x + nodeWidth + 1,
+                            'y0': nodes[source].y + source_sum[source] + source_y1 * j / actionList.length,
+                            'x1': nodes[source].x + nodeWidth + 1,
+                            'y1': nodes[source].y + source_sum[source] + source_y1 * (j+1) / actionList.length
+                        },
+                        'target':{
+                            'x0': node.x-1, 'y0': node.y + node.height * j / actionList.length,
+                            'x1': node.x-1, 'y1': node.y + node.height * (j+1) / actionList.length
+                        }
                     })
-                }
 
-                /*links.push({
-                    'source':{
-                        'x0': nodes[source].x+20, 
-                        'y0': nodes[source].y + source_sum[source],
-                        'x1': nodes[source].x+20, 
-                        'y1': nodes[source].y + source_sum[source] + source_y1
-                    },
-                    'target':{
-                        'x0': nodes[target].x, 'y0': nodes[target].y,
-                        'x1': nodes[target].x, 'y1': nodes[target].y + nodes[target].height
-                    }
-                })*/
+                    j++;
+                })
 
-                // --
-
-                source_sum[source] += source_y1;
+                source_sum[source] += source_y1
             }
-        }
+        })
     }
 
 
@@ -225,6 +215,7 @@ d3.sankey = function(){
     sankey.console = function(){
         console.log(data);
         console.log(nodes);
+        console.log(links);
     };
 
 
