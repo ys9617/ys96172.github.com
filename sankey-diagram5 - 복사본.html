@@ -55,9 +55,6 @@
                                     .append('g')
                                         .attr('class', 'node')
                                         .append('rect')
-                                            .attr('class', function(d, i){
-                                                return 'r'+i;
-                                            })
                                             .attr('width', nodeWidth)
                                             .attr('height', height)
                                             .attr('transform', function(d){
@@ -74,31 +71,11 @@
                 // mouse over and drag
                 node.on('mouseover', function(d, i){
                     d3.select(this)
-                        .style('fill-opacity', .5);
-                    var s = d.source;
-                    while(s >= -1){
-                        d3.select('.r'+s)
-                            .style('fill-opacity', .5);
-                        
-                        if(s != -1)
-                            s = sankey.nodes()[s].source;
-                        else
-                            s = -2;
-                    }
+                      .style('fill-opacity', .5);
                 })
                 .on('mouseout', function(d, i){
                     d3.select(this)
-                        .style('fill-opacity', .9);
-                    var s = d.source;
-                    while(s >= -1){
-                        d3.select('.r'+s)
-                            .style('fill-opacity', .9);
-                        
-                        if(s != -1)
-                            s = sankey.nodes()[s].source;
-                        else
-                            s = -2;
-                    }
+                      .style('fill-opacity', .9);
                 })
                 
                                         
