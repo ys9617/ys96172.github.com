@@ -4,36 +4,24 @@
         <title>Sankey</title>
         <script src="https://d3js.org/d3.v4.js"></script>
         <script src="history-sankey.js"></script>
-    <!--     <link rel="stylesheet" href="unit-history.css"/>   -->
-            <style>
-            .stop-left {
-                stop-color: #3f51b5;  /* Indigo */
-            }
-
-            .stop-right {
-                stop-color: #009688;  /* Teal */
-            }
-
-            .filled {
-                fill: url(#mainGradient);
-            }
-
-            .outlined {
-                fill:   none;
-                stroke: url(#mainGradient);
-                stroke-width: 4;
-            }
-        </style>
+        <link rel="stylesheet" href="unit-history.css"/>   
+        <script src="https://d3js.org/d3.v4.min.js"></script>
     </head>
     <body>
         <div id='sankey-diagram'></div>
         <script>
             var width = 800, height = 400, padding = 5;
-            var nodeWidth = 20;
+            var nodeWidth = 10;
 
             var svg = d3.select('#sankey-diagram').append('svg')
                         .attr('width', width+100)
-                        .attr('height', height+100);
+                        .attr('height', height+100)
+                        .attr('class', 'sankey')
+                    //    .append('rect')
+                      //  .attr('width', '100%')
+                        //.attr('height', '100%')
+                  //      .style("background-color", "grey")
+                    //    .attr('opacity', .5)
 
             var sankey = d3.sankey()
                             .nodeWidth(nodeWidth)
@@ -46,6 +34,8 @@
             
             d3.json('unit_his 1-2.json', function(data){
                 
+                var x, y;
+
                 sankey.data(data)
                         .layout();
 
@@ -60,7 +50,11 @@
                                             })
                                             .attr('width', nodeWidth)
                                             .attr('height', height)
-                                            .attr('transform', function(d){
+                                            .attr('transform', function(d, i){
+                                                if(i == 0){
+                                                    x = d.x;
+                                                    y = d.y;
+                                                }
                                                 return 'translate(' + d.x + ',' + d.y + ')';
                                             })
                                             .attr('height', function(d){
@@ -69,10 +63,29 @@
                                             .style('fill', 'steelblue')
                                             .style('stroke', 'black')
                                             .style('fill-opacity', .9);
+                
                                             
 
                 // mouse over and drag
                 node.on('mouseover', function(d, i){
+
+                    var tooltip = d3.select('body').append('div')
+                                         .attr('class', 'tooltip')
+                                         .style('position', 'absolute')
+                                         .style('opacity', 0);
+                                         
+                     tooltip.style('width', '120px')
+                            .style('height', '80px')
+                            .style('left', event.clientX+30 + 'px')
+                            .style('top', event.clientY +'px')
+                            .html('id : ' + d.id + '<br/>' +
+                                  'last_date : ' + d.last_date + "<br/>" +
+                                  'log_num : ' + d.log_num + "<br/>" +
+                                  'action_num : ' + d.action_num)
+                            .transition()
+                            .style('opacity', .9);
+                    
+
                     d3.select(this)
                         .style('fill-opacity', .5);
                     var s = d.source;
@@ -87,6 +100,8 @@
                     }
                 })
                 .on('mouseout', function(d, i){
+                    d3.select('.tooltip').remove();
+
                     d3.select(this)
                         .style('fill-opacity', .9);
                     var s = d.source;
@@ -103,50 +118,102 @@
                 
                                         
                 // ---------------links
+                // backgoround
+                var linkBackground = svg.append('g').selectAll('linkB')
+                                        .data(sankey.linkBackground)
+                                        .enter()
+                                            .append('path')
+                                                .attr('d', sankey.link())
+                                                .style('fill', '#eee')
+
+
+
                 var link = svg.append('g').selectAll('link')
                                 .data(sankey.links)
                                 .enter()
+                                    .append('g')
+                                        .attr('class','link')
                                     .append('path')
                                         .attr('class', function(d){
-                                            return 'link '+ d.action;
+                                            return d.action;
                                         })
                                         .attr('d', sankey.link())
-                                        .style('fill-opacity', .6)
+                          //              .style('fill-opacity', .6)
                                         .on('mouseover', function(d, i){
                                             d3.select(this)
-                                              .style('fill-opacity', .3);
+                                              .style('fill-opacity', 0.3);
                                         })
                                         .on('mouseout', function(d, i){
                                             d3.select(this)
-                                              .style('fill-opacity', .6);
+                                              .style('fill-opacity', 1);
                                         })
                                         .style('fill', function(d,i){
                                             return c20(d.action);
+                                            //return 'black'
                                         })
                                         .style('fill-opacity', .6)
 
-
-
-                                     //   .append('defs')
-                                       // .append('linearGradient')
-
-                /*link.append('stop')
-                    .attr('class', 'stop-left')
-                    .attr('offset', '0');
                 
-                link.append('stop')
-                    .attr('class', 'stop-right')
-                    .attr('offset', '1');*/
+                d3.select('.r0').remove();
+                d3.select('.sankey')
+                    .append('circle')
+                    .attr('cx', 20)
+                    .attr('cy', 20)
+                    .attr('r', 10)
+                    .attr('transform', function(){
+                        return 'translate(' + (x-9) + ',' + (y-15) + ')';
+                    })
+                    .style('fill', 'steelblue')
+                    .style('stroke', 'black')
+                    .attr('class', 'r0');
 
-                                   //         .append('stop')
-                                     //           .attr('class', 'stop-left')
-                                       //     .append('stop')
-                                         //       .attr('class', 'stop-right')
-                                                
-                       
 
-                                        
+                // legend
+                var legendData = [
+                    'Create-Unit',
+                    'Delete-Unit',
+                    'Select-Unit',
+                    'Save-Unit',
+                    'Change-Data',
+                    'Change-Cluster-Type',
+                    'Change-Cluster-Parameter',
+                    'Locate-Unit',
+                    'Change-Data-Annotation',
+                    'Change-Unit-Annotation',
+                    'Change-Unit-Name',
+                    'Branch-Unit',
+                    'Apply-Unit',
+                    'Change-Color'
+                ]
+
+               
                 
+                var legend = svg.append('g').selectAll('.legend')
+                                .data(legendData)
+                                .enter()
+                                    .append('rect')
+                                        .attr('width', 20)
+                                        .attr('height', 10)
+                                        .attr('transform', function(d, i){
+                                            return 'translate(' + (350 + i*22) + ',' + (350) + ')';
+                                        })
+                                        .style('fill', function(d, i){
+                                            console.log(d)
+                                            return c20(d)
+                                        })
+                                        .style('stroke', 'black')
+                                        .on('mouseover', function(d,i){
+                                            d3.select(this).style('fill-opacity', .5);
+                                            d3.selectAll('.'+d).style('fill', 'black')
+                                        })
+                                        .on('mouseout', function(d,i){
+                                            d3.select(this).style('fill-opacity', 1);
+                                            d3.selectAll('.'+d).style('fill', c20(d))
+                                        })
+
+
+
+
 
                 sankey.console();
             })
