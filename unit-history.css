@@ -1,0 +1,83 @@
+
+.link.Create-Unit {
+    fill : #2ca25f
+}
+
+.link.Delete-Unit {
+    fill : #2ca25f
+}
+
+.link.Select-Unit {
+    fill : #2ca25f
+}
+
+.link.Save-Unit {
+    fill : #2ca25f
+}
+
+.link.Locate-Unit {
+    fill : #2ca25f
+}
+
+.link.Branch-Unit {
+    fill : #2ca25f
+}
+
+.link.Apply-Unit {
+    fill : #2ca25f
+}
+
+
+
+
+.link.Undo-Unit {
+    fill : #99d8c9
+}
+
+.link.Redo-Unit {
+    fill : #99d8c9
+}
+
+
+/** change **/
+
+.link.Change-Color {
+    fill : #e5f5f9
+}
+
+.link.Change-Data {
+    fill : #e5f5f9
+}
+
+.link.Change-Cluster-Parameter {
+    fill : #e5f5f9
+}
+
+.link.Change-Data-Annotation {
+    fill : #e5f5f9
+}
+
+.link.Change-Unit-Name {
+    fill : #e5f5f9
+}
+
+.link.Change-Unit-Annotation {
+    fill : #e5f5f9
+}
+
+.link.Change-Cluster-Type {
+    fill : #e5f5f9
+}
+
+.tooltip {
+    position: absolute;
+    text-align: center;
+    width: 120px;
+    height: 80px;
+    padding: 2px;
+    font: 12px sans-serif;
+    background: lightsteelblue;
+    border: 2px;
+    border-radius: 8px;
+    stroke: #000;
+}
