@@ -1,7 +1,7 @@
 d3.sankey = function(){
     var sankey = {};
     var nodeWidth = 20, nodePadding = 5, sankeyHeight = 400, size = [1, 1];
-    var data, nodes = [], links = [];
+    var data, nodes = [], links = [], linkBackground = [];
 
     sankey.nodeWidth = function(_){
         if(!arguments.length) return nodeWidth;
@@ -41,6 +41,10 @@ d3.sankey = function(){
         return links;
     }
 
+    sankey.linkBackground = function(){
+        return linkBackground;
+    }
+
     sankey.link = function(){
         var  curvature = .5;
 
@@ -70,18 +74,18 @@ d3.sankey = function(){
     };
 
     sankey.layout = function(){
-        computeSankey(data.output, nodes, links, sankeyHeight, nodePadding);
+        computeSankey(data.output, nodes, links, sankeyHeight, nodePadding, linkBackground);
     }
 
     // ------------------ functions
 
-    function computeSankey(data, nodes, links, height, margin){
+    function computeSankey(data, nodes, links, height, margin, linkBackground){
         //nodes
         computeNodeXDS(data, nodes, 0, null, height);
         computeNodeYH(nodes, height, margin);
 
         //links
-        computeLink(nodes, links, nodeWidth, height);
+        computeLink(nodes, links, nodeWidth, height, linkBackground);
     }
 
     function computeNodeXDS(data, nodes, depth, parent, height){
@@ -91,20 +95,20 @@ d3.sankey = function(){
         if(parent == null) source = -1;
         else source = parent;
 
-     //   if(depth != -1){
-            nodes.push({
-                'id': data.id,
-                'total_action_num': data.total_action_num,
-                'action_num': data.action_num,
-                'last_date': data.last_date,
-                'ver': data.ver,
-                'anno_num': data.anno_num,
-                'action_list': data.action_list,
-                'x': x,
-                'depth': depth,
-                'source': source
-            });
-     //   }
+    
+        nodes.push({
+            'id': data.id,
+            'total_action_num': data.total_action_num,
+            'action_num': data.action_num,
+            'last_date': data.last_date,
+            'ver': data.ver,
+            'anno_num': data.anno_num,
+            'action_list': data.action_list,
+            'x': x,
+            'depth': depth,
+            'source': source
+        });
+      
 
         if(data.children){
             var tmp = nodes.length-1;
@@ -151,19 +155,19 @@ d3.sankey = function(){
                 y_tmp[node.depth] += node_height;
             }
 
-            node['height'] = node_height - margin;
+            if(node['depth'] == 0)
+                node['height'] = 10;
+            else    
+                node['height'] = node_height - margin;
         });
 
         // centerization
         nodes.forEach(function(node){
-            if(node.depth == 0)
-                node['y'] = 0;
-            else 
-                node['y'] += (200 - height * depthSum[node.depth]/(2*heightest));
+            node['y'] += (height/2 - height * depthSum[node.depth]/(2*heightest));
         });
     }
 
-    function computeLink(nodes, links, nodeWidth, height){
+    function computeLink(nodes, links, nodeWidth, height, linkBackground){
 
         var sourceDepthSum = [];
         var source_sum = [];
@@ -178,6 +182,15 @@ d3.sankey = function(){
         nodes.forEach(function(node){
             var source = node.source;
             
+       /*     if(source == 0){
+                var source_y1 = nodes[source].height * node.action_num / sourceDepthSum[node.source];
+
+                if(source_sum[source] == undefined)
+                    source_sum[source] = 0;
+
+                var actionList = node.action_list;
+
+            }*/
             if(source != -1){
                 var source_y1 = nodes[source].height * node.action_num / sourceDepthSum[node.source];
 
@@ -186,9 +199,24 @@ d3.sankey = function(){
 
                 var actionList = node.action_list;
 
+                
+                // link background
+                linkBackground.push({
+                    'source':{
+                        'x0': nodes[source].x + nodeWidth + 1,
+                        'y0': nodes[source].y + source_sum[source],
+                        'x1': nodes[source].x + nodeWidth + 1,
+                        'y1': nodes[source].y + source_sum[source] + source_y1
+                    },
+                    'target':{
+                        'x0': node.x-1, 'y0': node.y,
+                        'x1': node.x-1, 'y1': node.y + node.height
+                    }
+                })
+
                 var j = 0;
                 actionList.forEach(function(action){
-                    links.push({
+                    /*links.push({
                         'action': action.action,
                         'source':{
                             'x0': nodes[source].x + nodeWidth + 1,
@@ -200,10 +228,25 @@ d3.sankey = function(){
                             'x0': node.x-1, 'y0': node.y + node.height * j / actionList.length,
                             'x1': node.x-1, 'y1': node.y + node.height * (j+1) / actionList.length
                         }
+                    })*/
+
+                    links.push({
+                        'action': action.action,
+                        'source':{
+                            'x0': nodes[source].x + nodeWidth + 1,
+                            'y0': (nodes[source].y + source_sum[source] + source_y1 * j / actionList.length+nodes[source].y + source_sum[source] + source_y1 * (j+1) / actionList.length)/2-1,
+                            'x1': nodes[source].x + nodeWidth + 1,
+                            'y1': (nodes[source].y + source_sum[source] + source_y1 * j / actionList.length+nodes[source].y + source_sum[source] + source_y1 * (j+1) / actionList.length)/2
+                        },
+                        'target':{
+                            'x0': node.x-1, 'y0': (node.y + node.height * j / actionList.length+node.y + node.height * (j+1) / actionList.length)/2-1,
+                            'x1': node.x-1, 'y1': (node.y + node.height * j / actionList.length+node.y + node.height * (j+1) / actionList.length)/2
+                        }
                     })
 
                     j++;
                 })
+                
 
                 source_sum[source] += source_y1
             }
